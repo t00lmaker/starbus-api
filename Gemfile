@@ -13,6 +13,16 @@ gem 'pg'
 # Load variables in config/env.yml in ENV (variavel de ambiente).
 gem 'envyable'
 
+# Load Tasks para migratons from ActiveRecord.
+#gem 'standalone_migrations'
+
+#cliente da api da strans.
+gem 'strans-client', '1.5.0.pre.RC'
+
+#Ajuda a gerenciar conexoes com banco.
+#https://github.com/jhollinger/grape-activerecord
+gem "grape-activerecord"
+
 group :development do
   # Debug code Ruby require 'pry' and binding.pry
   # for define breakpoint.

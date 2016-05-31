@@ -1,8 +1,11 @@
-require "active_record"
 require "yaml"
 require "grape"
 require "./lib/load-config"
 require "./starbus-api"
+require "./model/linha"
+require "./model/parada"
+require "grape/activerecord"
+require "active_record"
 
 
 namespace :gp do
@@ -11,22 +14,25 @@ namespace :gp do
     StarBus::API.routes.each do |api|
       method = api.request_method.ljust(10)
       path = api.path
-      puts "     #{method} #{path}"
+      puts " #{method} - #{path}"
     end
   end
 end
 
+#https://github.com/rails/rails/edit/master/activerecord/lib/active_record/railties/databases.rake
+#melhorar com base no link acima.
 namespace :db do
 
   db_config       = YAML::load(File.open('config/database.yml'))
-  db_config       = db_config[ENV['database_env']]
-  db_config_admin = db_config.merge({'schema_search_path' => 'public'})
+  db_config       = db_config[ENV['database_env']] # carrega as configurações do banco.
+  db_config_admin = db_config.merge({'database' => 'postgres', 'schema_search_path' => 'public'})
+
 
   desc "Create the database"
   task :create do
     ActiveRecord::Base.establish_connection(db_config_admin)
     ActiveRecord::Base.connection.create_database(db_config["database"])
-    puts "Database created."
+    puts "Database #{db_config["database"]} created."
   end
 
   desc "Migrate the database"
@@ -37,11 +43,25 @@ namespace :db do
     puts "Database migrated."
   end
 
+#  task :down => [:environment, :load_config] do
+#    version = ENV['VERSION'] ? ENV['VERSION'].to_i : nil
+#    raise 'VERSION is required - To go down one migration, run db:rollback' unless version
+#    ActiveRecord::Migrator.run(:down, ActiveRecord::Tasks::DatabaseTasks.migrations_paths, version)
+#    db_namespace['_dump'].invoke
+#  end
+
+#  desc 'Rolls the schema back to the previous version (specify steps w/ STEP=n).'
+#  task :rollback => [:environment, :load_config] do
+#    step = ENV['STEP'] ? ENV['STEP'].to_i : 1
+#    ActiveRecord::Migrator.rollback(ActiveRecord::Tasks::DatabaseTasks.migrations_paths, step)
+#    db_namespace['_dump'].invoke
+#  end
+
   desc "Drop the database"
   task :drop do
     ActiveRecord::Base.establish_connection(db_config_admin)
     ActiveRecord::Base.connection.drop_database(db_config["database"])
-    puts "Database deleted."
+    puts "Database #{db_config["database"]}  deleted."
   end
 
   desc "Reset the database"

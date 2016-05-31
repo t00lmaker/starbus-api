@@ -11,9 +11,40 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 0) do
+ActiveRecord::Schema.define(version: 20160526115543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "linhas", force: :cascade do |t|
+    t.string   "codigo"
+    t.string   "denominacao"
+    t.string   "retorno"
+    t.string   "origem"
+    t.boolean  "circular"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "linhas_paradas", id: false, force: :cascade do |t|
+    t.integer "linha_id",  null: false
+    t.integer "parada_id", null: false
+  end
+
+  create_table "paradas", force: :cascade do |t|
+    t.string   "codigo"
+    t.string   "denominacao"
+    t.text     "endereco"
+    t.decimal  "lat"
+    t.decimal  "long"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "veiculos", force: :cascade do |t|
+    t.string   "codigo"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
 end
