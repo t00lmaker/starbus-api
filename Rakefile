@@ -25,11 +25,12 @@ namespace :db do
 
   db_config       = YAML::load(File.open('config/database.yml'))
   db_config       =  ENV['DATABASE_URL'] || db_config[ENV['database_env']] # carrega as configurações do banco.
-  db_config_admin = db_config.merge({'database' => 'postgres', 'schema_search_path' => 'public'})
+
 
 
   desc "Create the database"
   task :create do
+    db_config_admin = db_config.merge({'database' => 'postgres', 'schema_search_path' => 'public'})
     ActiveRecord::Base.establish_connection(db_config_admin)
     ActiveRecord::Base.connection.create_database(db_config["database"])
     puts "Database #{db_config["database"]} created."
@@ -59,6 +60,7 @@ namespace :db do
 
   desc "Drop the database"
   task :drop do
+    db_config_admin = db_config.merge({'database' => 'postgres', 'schema_search_path' => 'public'})
     ActiveRecord::Base.establish_connection(db_config_admin)
     ActiveRecord::Base.connection.drop_database(db_config["database"])
     puts "Database #{db_config["database"]}  deleted."
