@@ -14,4 +14,4 @@ test: &test
   username: toolmaker
   password:
 
-production: <%= ENV['DATABASE_URL']  %> 
+production:
