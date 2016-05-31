@@ -30,7 +30,7 @@ module StarBus
         requires :codigo, desc: 'código da parada que será buscada as linhas.'
       end
       desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
-      get :parada do
+      get :paradas do
         parada = Parada.find_by_codigo(params[:codigo])
         if parada
           parada.linhas
@@ -38,6 +38,8 @@ module StarBus
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         end
       end
+
+
 
       desc 'Recarrega todas as Linhas e salva com base na API Integrah.'
       get :load do
