@@ -6,7 +6,7 @@ require "lazy-strans-client"
 #Simples Singleton para garantir
 # que a validação do token está funcionando,
 # pois a api já faz o gerenciamento do Token.
-class StrabsAPi
+class StransAPi
   include Singleton
 
   def initialize
@@ -17,6 +17,8 @@ class StrabsAPi
   def get(path, busca=nil)
     @client.get(path, busca)
   end
+
+  RAIO_TERRA = 6378.137 #KM
 
   # retorna todas as Paradas próximas a as coordenadas passadas.
   def paradas_proximas(long, lat, dist)
@@ -53,6 +55,5 @@ class StrabsAPi
   def calc_distan(pos1, pos2)
     (pos1 - pos2) * Math::PI / 180
   end
-
 
 end
