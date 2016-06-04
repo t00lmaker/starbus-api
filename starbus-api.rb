@@ -1,14 +1,23 @@
 require 'grape'
 require './model/linha'
 require './model/parada'
+require './model/veiculo'
+require './model/reputation'
+require './model/interaction'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
+require 'grape-rabl'
+require 'pry'
 
 module StarBus
   class API < Grape::API
     version 'v1'
-    format  :json
+    format  :json, Grape::Formatter::Rabl
     prefix  :api
+
+    before do
+      puts headers['Token']
+    end
 
     resource :linhas do
       params do
@@ -31,7 +40,6 @@ module StarBus
     end #resource :linha
 
     resource :paradas do
-
       params do
         optional :codigo, desc: 'código da linha'
       end
@@ -59,7 +67,7 @@ module StarBus
       end
 
       params do
-        requires :lat, type: Float
+        requires :lat, type:  Float
         requires :long, type: Float
         requires :dist, type: Float
       end
@@ -78,6 +86,40 @@ module StarBus
       end
       get :linha do
         StransAPi.instance.get(:veiculos_linha, params[:codigo])
+      end
+    end
+
+    params do
+      requires :type, values: ['con','seg','mov','pon','ace','est']
+      requires :codigo
+      optional :avaliacao
+    end
+    resource :interactions do
+
+      get ':type/parada/:codigo' do
+        parada = Parada.find_by_codigo(params[:codigo])
+        parada.reputation.interactions.where(tipo: Interaction.tipos[params[:type]])
+      end
+      get ':type/veiculo/:codigo' do
+        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        veiculo.reputation.interactions.where(tipo: Interaction.tipos[params[:type]])
+      end
+
+      post ':type/parada/:codigo' do
+        i = Interaction.new
+        i.tipo = params[:type]
+        i.avaliacao = params[:avaliacao]
+        veiculo = Parada.find_by_codigo(params[:codigo])
+        veiculo.reputation ||= Reputation.new
+        veiculo.reputation.interactions << i
+      end
+      post ':type/veiculo/:codigo' do
+        i = Interaction.new
+        i.tipo = params[:type]
+        i.avaliacao = params[:avaliacao]
+        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        veiculo.reputation ||= Reputation.new
+        veiculo.reputation.interactions << i
       end
     end
 

@@ -11,4 +11,8 @@ ActiveRecord::Base.establish_connection(ENV['DATABASE_URL'] || db_config)
 
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
+use Rack::Config do |env|
+  env['api.tilt.root'] = 'rabl'
+end
+
 run StarBus::API

@@ -23,6 +23,9 @@ gem 'strans-client', '1.5.0.pre.RC'
 #https://github.com/jhollinger/grape-activerecord
 gem "grape-activerecord"
 
+#https://github.com/ruby-grape/grape-rabl
+gem 'grape-rabl'
+
 group :development do
   # Debug code Ruby require 'pry' and binding.pry
   # for define breakpoint.
