@@ -46,7 +46,7 @@ class StransAPi
         end
       end
     end
-    paradas
+    paradas.sort! { |a, b|  a.dist <=> b.dist }
   end
 
   private

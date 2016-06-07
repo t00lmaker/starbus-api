@@ -46,6 +46,11 @@ GEM
       activerecord (~> 4.0)
       grape (~> 0.1)
       hashie-forbidden_attributes (~> 0.1.1)
+    grape-rabl (0.4.1)
+      grape
+      i18n
+      rabl
+      tilt
     hashdiff (0.3.0)
     hashie (3.4.4)
     hashie-forbidden_attributes (0.1.1)
@@ -64,6 +69,8 @@ GEM
       coderay (~> 1.1.0)
       method_source (~> 0.8.1)
       slop (~> 3.4)
+    rabl (0.12.0)
+      activesupport (>= 2.3.14)
     rack (1.6.4)
     rack-accept (0.4.5)
       rack (>= 0.4)
@@ -84,6 +91,7 @@ GEM
     slop (3.6.0)
     strans-client (1.5.0.pre.RC)
     thread_safe (0.3.5)
+    tilt (2.0.5)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     vcr (3.0.3)
@@ -105,6 +113,7 @@ DEPENDENCIES
   envyable
   grape
   grape-activerecord
+  grape-rabl
   pg
   pry
   rspec
