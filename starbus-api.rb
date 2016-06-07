@@ -10,7 +10,6 @@ require './model/user'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
 require 'grape-rabl'
-require 'pry'
 
 module StarBus
   class API < Grape::API
@@ -36,7 +35,7 @@ module StarBus
       end
       desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
       get '/', :rabl => "linhas.rabl" do
-        busca = params[:busca].upcase 
+        busca = params[:busca].upcase
         if(params[:busca])
           puts "%#{busca}%"
           @linhas = Linha.where("codigo = ? OR denominacao like ?", busca, "%#{busca}%")
