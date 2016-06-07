@@ -37,6 +37,7 @@ module StarBus
       get '/', :rabl => "linhas.rabl" do
         busca = params[:busca]
         if(busca)
+          #TODO colocar origem e retorno aqui.
           @linhas = Linha.where("codigo = ? OR denominacao like ?", busca, "%#{busca.upcase}%")
         else
           @linhas = Linha.all
