@@ -36,7 +36,7 @@ module StarBus
       desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
       get '/', :rabl => "linhas.rabl" do
         busca = params[:busca]
-        if(params[:busca])
+        if(busca)
           @linhas = Linha.where("codigo = ? OR denominacao like ?", busca, "%#{busca.upcase}%")
         else
           @linhas = Linha.all

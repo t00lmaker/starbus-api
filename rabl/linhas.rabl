@@ -1,2 +1,3 @@
-collection @linhas, :object_root => 'linhas'
-  attributes :codigo, :denominacao, :retorno, :origem, :circular 
+object false, :object_root => 'linhas'
+collection @linhas, :object_root => false
+  attributes :codigo, :denominacao, :retorno, :origem, :circular
