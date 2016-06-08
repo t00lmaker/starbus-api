@@ -68,12 +68,12 @@ module StarBus
         optional :codigo, desc: 'código da linha'
       end
       desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
-      get '/' do
+      get '/', :rabl => "paradas.rabl"  do
         if(params[:codigo])
-          Parada.find_by_codigo(params[:codigo]) ||
+          @paradas = Parada.find_by_codigo(params[:codigo]) ||
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         else
-          Parada.all
+          @paradas = Parada.all
         end
       end
 
