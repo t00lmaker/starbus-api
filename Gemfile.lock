@@ -89,7 +89,7 @@ GEM
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
     slop (3.6.0)
-    strans-client (1.5.0.pre.RC)
+    strans-client (1.5.0)
     thread_safe (0.3.5)
     tilt (2.0.5)
     tzinfo (1.2.2)
@@ -100,7 +100,7 @@ GEM
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    webmock (2.0.3)
+    webmock (2.1.0)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
@@ -117,7 +117,7 @@ DEPENDENCIES
   pg
   pry
   rspec
-  strans-client (= 1.5.0.pre.RC)
+  strans-client
   vcr
   webmock
 

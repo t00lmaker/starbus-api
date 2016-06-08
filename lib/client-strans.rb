@@ -21,9 +21,10 @@ class StransAPi
   RAIO_TERRA = 6378.137 #KM
 
   # retorna todas as Paradas próximas a as coordenadas passadas.
-  def paradas_proximas(long, lat, dist)
+  def paradas_proximas(long, lat, dist, sources = nil)
     paradas = []
-    Parada.all.each do |parada|
+    sources ||= Parada.all
+    sources.each do |parada|
       if(!parada.long.nil? && !parada.long.nil?)
         dLong = calc_distan(long, parada.long)
         dLat  = calc_distan(lat, parada.lat)

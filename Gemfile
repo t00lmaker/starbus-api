@@ -17,7 +17,7 @@ gem 'envyable'
 #gem 'standalone_migrations'
 
 #cliente da api da strans.
-gem 'strans-client', '1.5.0.pre.RC'
+gem 'strans-client'
 
 #Ajuda a gerenciar conexoes com banco.
 #https://github.com/jhollinger/grape-activerecord

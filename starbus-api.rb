@@ -10,6 +10,7 @@ require './model/user'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
 require 'grape-rabl'
+require 'pry'
 
 module StarBus
   class API < Grape::API
@@ -99,14 +100,16 @@ module StarBus
     end
 
     resource :veiculos do
-      get :agora do
-        StransAPi.instance.get(:linhas)
+
+      get :agora, :rabl => "veiculos.rabl" do
+        @veiculos = StransAPi.instance.get(:veiculos)
       end
+
       params do
         requires :codigo, desc: 'código da linha que deseja os veículos.'
       end
-      get :linha do
-        StransAPi.instance.get(:veiculos_linha, params[:codigo])
+      get "linha/:codigo", :rabl => "veiculos.rabl" do
+        @veiculos = StransAPi.instance.get(:veiculos_linha, params[:codigo])
       end
 
       params do
@@ -163,6 +166,25 @@ module StarBus
         veiculo.reputation ||= Reputation.new
         veiculo.reputation.interactions << i
         veiculo.save!
+      end
+    end
+
+    params do
+      requires :lat, type:  Float
+      requires :long, type: Float
+      requires :codigo
+    end
+    resource :paradasveiculos do
+      get "linha/:codigo", :rabl => "paradas_veiculos.rabl" do
+        @linha = Linha.find_by_codigo(params[:codigo])
+        if(@linha)
+          lon = params[:long]
+          lat = params[:lat]
+          @paradas = StransAPi.instance.paradas_proximas(lon, lat, 1000, @linha.paradas)
+          @veiculos = StransAPi.instance.get(:veiculos_linha, params[:codigo])
+          return
+        end
+        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
       end
     end
 
