@@ -10,7 +10,7 @@ require './model/user'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
 require 'grape-rabl'
-require 'pry'
+
 
 module StarBus
   class API < Grape::API
