@@ -4,7 +4,7 @@ class Interaction < ActiveRecord::Base
   belongs_to :reputation
   belongs_to :user
 
-  enum type_: {  ace:'ACESSO',
+  enum type_: { ace:'ACESSO',
                 conf:'CONFORTO',
                 est:'ESTADO',
                 mov:'MOVIMENTACAO',

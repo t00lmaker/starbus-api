@@ -38,7 +38,7 @@ module StarBus
         busca = params[:busca]
         if(busca)
           #TODO colocar origem e retorno aqui.
-          @linhas = Linha.where("codigo = ? OR denominacao like ?", busca, "%#{busca.upcase}%")
+          @linhas = Linha.where("codigo like ? OR denominacao like ?", "%#{busca}%", "%#{busca.upcase}%")
         else
           @linhas = Linha.all
         end
