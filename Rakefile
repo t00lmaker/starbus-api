@@ -24,7 +24,7 @@ end
 namespace :db do
 
   db_config       = YAML::load(File.open('config/database.yml'))
-  db_config       =  ENV['DATABASE_URL'] || db_config[ENV['database_env']] # carrega as configurações do banco.
+  db_config       = ENV['DATABASE_URL'] || db_config[ENV['database_env']] # carrega as configurações do banco.
 
 
 

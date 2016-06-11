@@ -2,6 +2,7 @@
 require 'envyable'
 require 'active_record'
 require './lib/load-config'
+require 'rabl'
 
 require File.expand_path('starbus-api', File.dirname(__FILE__))
 
@@ -13,6 +14,12 @@ use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 use Rack::Config do |env|
   env['api.tilt.root'] = 'rabl'
+end
+
+Rabl.configure do |config|
+  config.replace_nil_values_with_empty_strings = false
+  config.exclude_nil_values = true
+  config.exclude_empty_values_in_collections = false
 end
 
 run StarBus::API

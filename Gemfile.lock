@@ -46,7 +46,7 @@ GEM
       activerecord (~> 4.0)
       grape (~> 0.1)
       hashie-forbidden_attributes (~> 0.1.1)
-    grape-rabl (0.4.1)
+    grape-rabl (0.4.2)
       grape
       i18n
       rabl
@@ -89,7 +89,7 @@ GEM
     rspec-support (3.4.1)
     safe_yaml (1.0.4)
     slop (3.6.0)
-    strans-client (1.5.0)
+    strans-client (1.5.1)
     thread_safe (0.3.5)
     tilt (2.0.5)
     tzinfo (1.2.2)

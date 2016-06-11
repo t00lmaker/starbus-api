@@ -7,6 +7,8 @@ child :reputation do |ele|
   node(:con){ ele.media('CONFORTO') }
   node(:ace){ ele.media('ACESSO') }
 end
-child :linhas, :object_root => false do
+child :linhas, :object_root => false do |ele|
+  unless ele.nil?
     attributes :codigo, :denominacao
+  end
 end

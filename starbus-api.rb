@@ -10,7 +10,7 @@ require './model/user'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
 require 'grape-rabl'
-
+require 'pry'
 
 module StarBus
   class API < Grape::API
@@ -180,8 +180,11 @@ module StarBus
         if(@linha)
           lon = params[:long]
           lat = params[:lat]
-          @paradas = StransAPi.instance.paradas_proximas(lon, lat, 1000, @linha.paradas)
-          @veiculos = StransAPi.instance.get(:veiculos_linha, params[:codigo])
+          @paradas = StransAPi.instance.paradas_proximas(lon, lat, 2000, @linha.paradas)
+          @paradas = @paradas.empty? ?  Object.new : @paradas
+          result = StransAPi.instance.get(:veiculos_linha, params[:codigo])
+          @veiculos = result.is_a?(ErroStrans) || result.empty? ? Object.new : result
+          binding.pry
           return
         end
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
