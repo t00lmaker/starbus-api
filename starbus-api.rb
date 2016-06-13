@@ -9,6 +9,7 @@ require './model/token'
 require './model/user'
 require './lib/load_linhas_paradas'
 require './lib/client-strans'
+require './lib/bus-cache'
 require 'grape-rabl'
 
 module StarBus
@@ -101,14 +102,14 @@ module StarBus
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
-        @veiculos = StransAPi.instance.get(:veiculos)
+        @veiculos = BusCache.instance.get()
       end
 
       params do
         requires :codigo, desc: 'código da linha que deseja os veículos.'
       end
       get "linha/:codigo", :rabl => "veiculos.rabl" do
-        @veiculos = StransAPi.instance.get(:veiculos_linha, params[:codigo])
+        @veiculos = BusCache.instance.get_by_line(params[:codigo])
       end
 
       params do

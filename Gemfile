@@ -26,6 +26,10 @@ gem "grape-activerecord"
 #https://github.com/ruby-grape/grape-rabl
 gem 'grape-rabl'
 
+#Gem que ajuda a trabalhar com tempo
+#https://github.com/kylewlacy/timerizer
+gem 'timerizer'
+
 group :development do
   # Debug code Ruby require 'pry' and binding.pry
   # for define breakpoint.

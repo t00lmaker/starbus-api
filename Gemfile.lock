@@ -92,6 +92,7 @@ GEM
     strans-client (1.5.1)
     thread_safe (0.3.5)
     tilt (2.0.5)
+    timerizer (0.1.4)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
     vcr (3.0.3)
@@ -118,6 +119,7 @@ DEPENDENCIES
   pry
   rspec
   strans-client
+  timerizer
   vcr
   webmock
 
