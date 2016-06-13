@@ -52,6 +52,7 @@ class BusCache
         veiculos.each do |v|
           @buses_by_code[v.codigo] = v
           @buses_by_lines[v.linha.codigo] ||= []
+          @buses_by_lines[v.linha.codigo].delete_if{ |e| e.codigo == v.codigo }
           @buses_by_lines[v.linha.codigo] << v
         end
       end
