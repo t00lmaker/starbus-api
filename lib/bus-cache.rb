@@ -31,7 +31,7 @@ class BusCache
   def valid?(veiculo)
     hora_as_array = veiculo.hora.split(':')
     hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
-    time_veic = Time.now.change(hash_h)
+    time_veic = now.change(hash_h)
     time_veic >= LIMIT_TIME_VEI.ago
   end
 
@@ -46,7 +46,7 @@ class BusCache
 
   def update
     unless updated?
-      @last_update = Time.now
+      @last_update = now
       veiculos = StransAPi.instance.get(:veiculos)
       if(veiculos && !veiculos.is_a?(ErroStrans))
         veiculos.each do |v|
@@ -60,6 +60,10 @@ class BusCache
 
   def rest
     @buses_by_code = {}
+  end
+
+  def now
+    Time.now.utc.localtime("-03:00")
   end
 
 end
