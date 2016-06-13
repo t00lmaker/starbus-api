@@ -182,8 +182,8 @@ module StarBus
           lat = params[:lat]
           @paradas = StransAPi.instance.paradas_proximas(lon, lat, 2000, @linha.paradas)
           @paradas = @paradas.empty? ?  Object.new : @paradas
-          result = StransAPi.instance.get(:veiculos_linha, params[:codigo])
-          @veiculos = result.is_a?(ErroStrans) || result.empty? ? Object.new : result
+          result = BusCache.instance.get_by_line(params[:codigo])
+          @veiculos = result.empty? ? Object.new : result
           return
         end
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
