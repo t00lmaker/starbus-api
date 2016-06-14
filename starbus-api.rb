@@ -8,6 +8,7 @@ require './model/checkin'
 require './model/token'
 require './model/user'
 require './lib/load_linhas_paradas'
+require './lib/load_veiculos'
 require './lib/client-strans'
 require './lib/bus-cache'
 require 'grape-rabl'
@@ -99,10 +100,21 @@ module StarBus
 
     end
 
+    resource :reputation do
+      get :create do
+        Paradas.all.each
+
+      end
+    end
+
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
         @veiculos = BusCache.instance.get()
+      end
+
+      get :load do
+        LoadVeiculos.new.init
       end
 
       params do

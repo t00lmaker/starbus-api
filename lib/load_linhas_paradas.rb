@@ -45,6 +45,7 @@ class LoadLinhasParadas
       parada_hash = parada_hash.except("linha")
       parada = @paradas[p.codigo] || Parada.new(parada_hash)
       @paradas[p.codigo] = parada
+      parada.reputation ||= Reputation.new 
       paradas << parada
     end
     paradas
