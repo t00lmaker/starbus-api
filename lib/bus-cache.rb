@@ -19,13 +19,13 @@ class BusCache
 
   def get_by_line(cod_linha)
     update()
-    valids(@buses_by_lines[cod_linha])
+    valids(@buses_by_lines[cod_linha]||[])
   end
 
   def get(codigo=nil)
     update()
     buses = codigo ? @buses_by_code[codigo] : @buses_by_code.values
-    valids(buses)
+    valids(buses || [])
   end
 
   def valid?(veiculo)
