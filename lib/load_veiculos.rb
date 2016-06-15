@@ -5,7 +5,7 @@ require './model/veiculo'
 
 class LoadVeiculos
 
-  def init
+  def init()
     veiculos = StransAPi.instance.get(:veiculos)
     veiculos.each{|v| transform_veiculos(v).save! }
   end

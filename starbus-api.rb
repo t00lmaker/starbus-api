@@ -153,6 +153,11 @@ module StarBus
       get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
         veiculo = Veiculo.find_by_codigo(params[:codigo])
+        if(!veiculo)
+          veiculo = Veiculo.new
+          veiculo.reputation = reputation.new
+          veiculo.save
+        end
         @reputation = veiculo.reputation
         @interactions = @reputation.interactions_type(@type)
       end
@@ -175,11 +180,14 @@ module StarBus
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
         veiculo = Veiculo.find_by_codigo(params[:codigo])
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
         veiculo.reputation ||= Reputation.new
         veiculo.reputation.interactions << i
         veiculo.save!
       end
     end
+
+    RAIO_BUSCA_APP = 500
 
     params do
       requires :lat, type:  Float
@@ -192,7 +200,7 @@ module StarBus
         if(@linha)
           lon = params[:long]
           lat = params[:lat]
-          @paradas = StransAPi.instance.paradas_proximas(lon, lat, 200, @linha.paradas)
+          @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
           @veiculos = BusCache.instance.get_by_line(params[:codigo])
           return
         end

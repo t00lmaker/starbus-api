@@ -15,3 +15,10 @@ test: &test
   password:
 
 production:
+  adapter: postgresql
+  encoding: utf-8
+  database: d33ph7u6vr2csa
+  username: gojcusdoicdnlj
+  password: FWTKx8QaOl_CFaOKXRZDTHapHZ
+  host: ec2-23-21-148-9.compute-1.amazonaws.com
+  port: 5432
