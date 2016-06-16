@@ -19,39 +19,20 @@ class BusCache
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
   end
 
+  def all()
+    update()
+    valids(@buses_by_code.values)
+  end
+
+  def get(codigo)
+    update()
+    @buses_by_code[codigo] ||
+    Veiculo.find_by_codigo(codigo)
+  end
+
   def get_by_line(cod_linha)
     update()
     valids(@buses_by_lines[cod_linha]||[])
-  end
-
-  def get(codigo=nil)
-    update()
-    buses = codigo ? @buses_by_code[codigo] : @buses_by_code.values
-    valids(buses || [])
-  end
-
-  def valid?(veiculo)
-    hora_as_array = veiculo.hora.split(':')
-    hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
-    time_veic = now.change(hash_h)
-    time_veic >= LIMIT_TIME_VEI.ago
-  end
-
-  def merge(veiculo)
-    veiculos = get(veiculo.codigo)
-    if(veiculos.first)
-      veiculo_strans = veiculos.first
-      veiculo.hora = veiculo_strans.hora
-      veiculo.lat  = veiculo_strans.lat
-      veiculo.long = veiculo_strans.long
-      veiculo.linha = veiculo_strans.linha
-    end
-    veiculo
-  end
-
-
-  def valids(buses)
-    buses.select { |v| valid?(v) }
   end
 
   def updated?
@@ -85,6 +66,7 @@ class BusCache
   private
 
   def update_db
+    puts "#{@buses_by_code.size}"
     @buses_by_code.keys.each do |codigo|
       veiculo = Veiculo.find_by_codigo(codigo)
       if(!veiculo)
@@ -92,7 +74,30 @@ class BusCache
         veiculo.reputation = Reputation.new
         veiculo.save
       end
+      @buses_by_code[codigo] = merge(veiculo, @buses_by_code[codigo])
     end
+  end
+
+  def merge(veiculo, veiculo_stras)
+    veiculo_strans ||= get(veiculo.codigo)
+    if(veiculo_strans)
+      veiculo.hora = veiculo_strans.hora
+      veiculo.lat  = veiculo_strans.lat
+      veiculo.long = veiculo_strans.long
+      veiculo.linha = veiculo_strans.linha
+    end
+    veiculo
+  end
+
+  def valid?(veiculo)
+    hora_as_array = veiculo.hora.split(':')
+    hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
+    time_veic = now.change(hash_h)
+    time_veic >= LIMIT_TIME_VEI.ago
+  end
+
+  def valids(buses)
+    buses.select { |v| valid?(v) }
   end
 
 end

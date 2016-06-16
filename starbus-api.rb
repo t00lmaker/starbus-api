@@ -109,7 +109,7 @@ module StarBus
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.get()
+        @veiculos = BusCache.instance.all
       end
 
       get :load do
@@ -165,7 +165,7 @@ module StarBus
       get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
         codigo = params[:codigo]
         @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(codigo)
+        veiculo = BusCache.instance.get(codigo)
         @reputation = veiculo.reputation
         @interactions = @reputation.interactions_type(@type)
       end
