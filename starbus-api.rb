@@ -144,6 +144,8 @@ module StarBus
 
     end
 
+    # limite de interacitions por tela.
+    LIMIT = 1
     params do
       requires :type, values: ['con','seg','mov','pon','ace','est']
       requires :codigo
@@ -156,7 +158,7 @@ module StarBus
         @type = Interaction.type_s[params[:type]]
         parada = Parada.find_by_codigo(params[:codigo])
         @reputation = parada.reputation
-        @interactions = @reputation.interactions_type(@type)
+        @interactions = @reputation.interactions_type(@type, LIMIT)
       end
       get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
         codigo = params[:codigo]
@@ -168,7 +170,7 @@ module StarBus
           veiculo.save
         end
         @reputation = veiculo.reputation
-        @interactions = @reputation.interactions_type(@type)
+        @interactions = @reputation.interactions_type(@type, LIMIT)
       end
 
       post ':type/parada/:codigo' do
