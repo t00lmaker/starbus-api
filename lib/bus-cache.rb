@@ -79,4 +79,17 @@ class BusCache
     Time.now.utc.localtime("-03:00")
   end
 
+  private
+
+  def update_db
+    @buses_by_code.keys.each do |codigo|
+      veiculo = Veiculo.find_by_codigo(codigo: v.codigo)
+      if(!veiculo)
+        veiculo = Veiculo.new(codigo: codigo)
+        veiculo.reputation = Reputation.new
+        veiculo.save
+      end
+    end
+  end
+
 end

@@ -166,11 +166,6 @@ module StarBus
         codigo = params[:codigo]
         @type = Interaction.type_s[params[:type]]
         veiculo = Veiculo.find_by_codigo(codigo)
-        if(!veiculo)
-          veiculo = Veiculo.new(codigo: codigo)
-          veiculo.reputation = Reputation.new
-          veiculo.save
-        end
         @reputation = veiculo.reputation
         @interactions = @reputation.interactions_type(@type)
       end
