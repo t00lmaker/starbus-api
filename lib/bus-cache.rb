@@ -84,7 +84,7 @@ class BusCache
 
   def update_db
     @buses_by_code.keys.each do |codigo|
-      veiculo = Veiculo.find_by_codigo(codigo: v.codigo)
+      veiculo = Veiculo.find_by_codigo(codigo: codigo)
       if(!veiculo)
         veiculo = Veiculo.new(codigo: codigo)
         veiculo.reputation = Reputation.new
