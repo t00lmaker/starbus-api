@@ -1,6 +1,8 @@
 require 'singleton'
 require 'lazy-strans-client'
 require 'timerizer'
+require './model/veiculo'
+
 
 # Essa classe deve atualizar um cache
 # da posicao de todos os onibus, retornando
@@ -84,7 +86,7 @@ class BusCache
 
   def update_db
     @buses_by_code.keys.each do |codigo|
-      veiculo = Veiculo.find_by_codigo(codigo: codigo)
+      veiculo = Veiculo.find_by_codigo(codigo)
       if(!veiculo)
         veiculo = Veiculo.new(codigo: codigo)
         veiculo.reputation = Reputation.new
