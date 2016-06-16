@@ -67,6 +67,7 @@ class BusCache
           @buses_by_lines[v.linha.codigo].delete_if{ |e| e.codigo == v.codigo }
           @buses_by_lines[v.linha.codigo] << v
         end
+        update_db()
       end
     end
   end
