@@ -20,7 +20,6 @@ module StarBus
     format  :json
     formatter :json, Grape::Formatter::Rabl
 
-
     before do
       puts headers['Token']
     end
@@ -169,7 +168,7 @@ module StarBus
           veiculo.save
         end
         @reputation = veiculo.reputation
-        @interactions = @reputation.interactions_type(@type)
+        @interactions = @reputation.interactions_type(@type).order(created_at: :desc)
       end
 
       post ':type/parada/:codigo' do
