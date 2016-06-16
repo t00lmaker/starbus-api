@@ -140,7 +140,7 @@ module StarBus
       post :checkin do
         check_in = Checkin.new
         check_in.user = current_user
-        check_in.veiculo = Veiculo.find_by_codigo(params[:codigo])
+        check_in.veiculo = BusCache.instance.get(params[:codigo])
         check_in.save!
       end
 
