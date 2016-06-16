@@ -5,7 +5,9 @@ class Reputation < ActiveRecord::Base
 
 
   def interactions_type(type)
-    interactions.where(type_: type)
+    interactions
+      .where(type_: type)
+      .order(created_at: :desc)
   end
 
   def num_interactions(type)
@@ -19,7 +21,7 @@ class Reputation < ActiveRecord::Base
       return 0
     end
     interactions.each{|i| total += i.evaluation_value.to_i }
-    (total / interactions.size).to_i 
+    (total / interactions.size)
   end
 
 end

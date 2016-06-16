@@ -168,7 +168,7 @@ module StarBus
           veiculo.save
         end
         @reputation = veiculo.reputation
-        @interactions = @reputation.interactions_type(@type).order(created_at: :desc)
+        @interactions = @reputation.interactions_type(@type)
       end
 
       post ':type/parada/:codigo' do
