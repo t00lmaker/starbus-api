@@ -113,8 +113,17 @@ module StarBus
         @veiculos = BusCache.instance.get()
       end
 
+
+
       get :load do
         LoadVeiculos.new.init
+      end
+
+      params do
+        requires :codigo, desc: 'código do veciculo.'
+      end
+      get "/:codigo" do
+        BusCache.instance.get(params[:codigo])
       end
 
       params do
@@ -151,11 +160,12 @@ module StarBus
         @interactions = @reputation.interactions_type(@type)
       end
       get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
+        codigo = params[:codigo]
         @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        veiculo = Veiculo.find_by_codigo(codigo)
         if(!veiculo)
-          veiculo = Veiculo.new
-          veiculo.reputation = reputation.new
+          veiculo = Veiculo.new(codigo: codigo)
+          veiculo.reputation = Reputation.new
           veiculo.save
         end
         @reputation = veiculo.reputation
