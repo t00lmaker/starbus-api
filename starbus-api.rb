@@ -119,8 +119,12 @@ module StarBus
       params do
         requires :codigo, desc: 'código do veciculo.'
       end
-      get "/:codigo" do
-        @veiculos = Veiculo.find_by_codigo(params[:codigo])
+      get "/:codigo", :rabl => "veiculos.rabl" do
+        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        if(!veiculo)
+          error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+        end
+        @veiculos = BusCache.instance.merge(veiculo)
       end
 
       params do

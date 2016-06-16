@@ -35,6 +35,18 @@ class BusCache
     time_veic >= LIMIT_TIME_VEI.ago
   end
 
+  def merge(veiculo)
+    veiculos = get(veiculo.codigo)
+    if(veiculos.first)
+      veiculo_strans = veiculos.first
+      veiculo.hora = veiculo_strans.hora
+      veiculo.lat  = veiculo_strans.lat
+      veiculo.long = veiculo_strans.long
+      veiculo.linha = veiculo_strans.linha
+    end
+    veiculo
+  end
+
 
   def valids(buses)
     buses.select { |v| valid?(v) }
