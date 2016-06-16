@@ -120,11 +120,11 @@ module StarBus
         requires :codigo, desc: 'código do veciculo.'
       end
       get "/:codigo", :rabl => "veiculos.rabl" do
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        if(!veiculo)
+        @veiculos = BusCache.instance.get(params[:codigo])
+        if(!@veiculos)
           error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         end
-        @veiculos = BusCache.instance.merge(veiculo)
+         @veiculos
       end
 
       params do
@@ -138,10 +138,14 @@ module StarBus
         requires :codigo, desc: 'código do veículo que será feito o checkin.'
       end
       post :checkin do
-        check_in = Checkin.new
-        check_in.user = current_user
-        check_in.veiculo = BusCache.instance.get(params[:codigo])
-        check_in.save!
+        veiculo = BusCache.instance.get(params[:codigo])
+        if(veiculo)
+          check_in = Checkin.new
+          check_in.user = current_user
+          check_in.veiculo = veiculo
+          return check_in.save!
+        end
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
       end
 
     end

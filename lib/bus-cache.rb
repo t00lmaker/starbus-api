@@ -26,6 +26,8 @@ class BusCache
 
   def get(codigo)
     update()
+    puts @buses_by_code.values.size
+    puts @buses_by_code[codigo]
     @buses_by_code[codigo] ||
     Veiculo.find_by_codigo(codigo)
   end
@@ -79,7 +81,7 @@ class BusCache
   end
 
   def merge(veiculo, veiculo_stras)
-    veiculo_strans ||= get(veiculo.codigo)
+    veiculo_strans ||= @buses_by_code[veiculo.codigo]
     if(veiculo_strans)
       veiculo.hora = veiculo_strans.hora
       veiculo.lat  = veiculo_strans.lat
