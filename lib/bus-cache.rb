@@ -15,7 +15,7 @@ class BusCache
 
   def initialize
     @buses_by_code = {}
-    @buses_by_lines = {}
+    @buses_by_line = {}
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
   end
 
@@ -30,10 +30,10 @@ class BusCache
   end
 
   def get_by_line(cod_linha)
-    update()
-    hash_linhas = @buses_by_lines[cod_linha]
-    hash_linhas ||= {}
-    valids(hash_linhas.values)
+    veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
+    load_in_map(veiculos)
+    veiculos = @buses_by_line[cod_linha]
+    veiculos ? veiculos.values : veiculos
   end
 
   def updated?
@@ -59,18 +59,26 @@ class BusCache
 
   def update
     unless updated?
-      reset
       @last_update = now
       veiculos = StransAPi.instance.get(:veiculos)
-      if(veiculos && !veiculos.is_a?(ErroStrans))
-        veiculos.each do |veiculo_strans|
+      load_in_map(veiculos)
+    end
+  end
+
+  def load_in_map(veiculos_strans)
+    veiculos_update = []
+    if(veiculos_strans && !veiculos_strans.is_a?(ErroStrans))
+      veiculos_strans.each do |veiculo_strans|
+        if(valid?(veiculo_strans))
           veiculo = load_or_save(veiculo_strans)
+          veiculos_update << veiculo
           @buses_by_code[veiculo.codigo] = veiculo
-          @buses_by_lines[veiculo.linha.codigo] ||= {}
-          @buses_by_lines[veiculo.linha.codigo][veiculo.codigo] = veiculo
+          @buses_by_line[veiculo.linha.codigo] ||= {}
+          @buses_by_line[veiculo.linha.codigo][veiculo.codigo] = veiculo
         end
       end
     end
+    veiculos_update
   end
 
   def load_or_save(veiculo_strans)
