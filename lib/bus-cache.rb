@@ -59,6 +59,7 @@ class BusCache
 
   def update
     unless updated?
+      reset
       @last_update = now
       veiculos = StransAPi.instance.get(:veiculos)
       if(veiculos && !veiculos.is_a?(ErroStrans))
@@ -82,6 +83,11 @@ class BusCache
     veiculo.merge(veiculo_strans)
     veiculo.save unless veiculo.persisted?
     veiculo
+  end
+
+  def reset
+    @buses_by_code = {}
+    @buses_by_lines = {}
   end
 
 end
