@@ -47,10 +47,13 @@ class BusCache
   end
 
   def valid?(veiculo)
-    hora_as_array = veiculo.hora.split(':')
-    hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
-    time_veic = now.change(hash_h)
-    time_veic >= LIMIT_TIME_VEI.ago
+    if (veiculo)
+      hora_as_array = veiculo.hora.split(':')
+      hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
+      time_veic = now.change(hash_h)
+      return time_veic >= LIMIT_TIME_VEI.ago
+    end
+    false
   end
 
   def valids(buses)
