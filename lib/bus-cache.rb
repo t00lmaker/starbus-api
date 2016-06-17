@@ -26,7 +26,7 @@ class BusCache
 
   def get(codigo)
     update()
-    alid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] : nil
+    valid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] : nil
   end
 
   def get_by_line(cod_linha)
