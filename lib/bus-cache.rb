@@ -26,14 +26,14 @@ class BusCache
 
   def get(codigo)
     update()
-    @buses_by_code[codigo]
+    alid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] :
   end
 
   def get_by_line(cod_linha)
     veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
     load_in_map(veiculos)
     veiculos = @buses_by_line[cod_linha]
-    veiculos ? veiculos.values : veiculos
+    veiculos ? valids(veiculos.values) : veiculos
   end
 
   def updated?
