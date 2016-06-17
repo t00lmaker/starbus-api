@@ -119,12 +119,11 @@ module StarBus
       params do
         requires :codigo, desc: 'código do veciculo.'
       end
-      get "/:codigo", :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.get(params[:codigo])
-        if(!@veiculos)
+      get "/:codigo", :rabl => "veiculo.rabl" do
+        @veiculo = BusCache.instance.get(params[:codigo])
+        if(!@veiculo)
           error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
         end
-         @veiculos
       end
 
       params do
