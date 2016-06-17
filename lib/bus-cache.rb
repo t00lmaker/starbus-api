@@ -28,7 +28,7 @@ class BusCache
     update()
     puts ">>> #{@buses_by_code[codigo].reputation}"
     puts ">>> #{valid?(@buses_by_code[codigo])}"
-    @buses_by_code[codigo] ? valid?(@buses_by_code[codigo]) : nil
+    valid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] : nil
   end
 
   def get_by_line(cod_linha)

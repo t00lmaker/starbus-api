@@ -121,6 +121,7 @@ module StarBus
       end
       get "/:codigo", :rabl => "veiculo.rabl" do
         @veiculo = BusCache.instance.get(params[:codigo])
+        puts ">>>>>> #{  @veiculo }"
         if(!@veiculo)
           error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
         end
