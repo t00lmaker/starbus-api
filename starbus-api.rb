@@ -122,7 +122,7 @@ module StarBus
       get "/:codigo", :rabl => "veiculos.rabl" do
         @veiculos = BusCache.instance.get(params[:codigo])
         if(!@veiculos)
-          error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+          error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
         end
          @veiculos
       end
@@ -145,7 +145,7 @@ module StarBus
           check_in.veiculo = veiculo
           return check_in.save!
         end
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Não podemos fazer login em um veiculo que não se encontra rodando.' }, 404)
       end
 
     end
