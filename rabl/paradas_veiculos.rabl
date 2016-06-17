@@ -9,7 +9,7 @@ child @paradas, :root => :paradas, :object_root => false do
     node(:ace){ ele.media('ACESSO') }
   end
   child :linhas, :object_root => false do
-    attributes :codigo, :denominacao
+    attributes :codigo, :denominacao, :retorno, :origem, :circular
   end
 end
 
