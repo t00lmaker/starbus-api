@@ -5,7 +5,7 @@ class Interaction < ActiveRecord::Base
   belongs_to :user
 
   enum type_: { ace:'ACESSO',
-                conf:'CONFORTO',
+                con:'CONFORTO',
                 est:'ESTADO',
                 mov:'MOVIMENTACAO',
                 pon:'PONTUALIDADE',
