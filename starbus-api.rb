@@ -99,13 +99,6 @@ module StarBus
 
     end
 
-    resource :reputation do
-      get :create do
-        Paradas.all.each
-
-      end
-    end
-
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
@@ -162,13 +155,15 @@ module StarBus
       get ':type/parada/:codigo', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
         parada = Parada.find_by_codigo(params[:codigo])
+        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
         @reputation = parada.reputation
         @interactions = @reputation.interactions_type(@type)
       end
       get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
         codigo = params[:codigo]
         @type = Interaction.type_s[params[:type]]
-        veiculo = BusCache.instance.get(codigo)
+        veiculo = Veiculo.find_by_codigo(codigo)
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
         @reputation = veiculo.reputation
         @interactions = @reputation.interactions_type(@type)
       end
