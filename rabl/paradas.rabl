@@ -9,6 +9,6 @@ child :reputation do |ele|
 end
 child :linhas, :object_root => false do |ele|
   unless ele.nil?
-    attributes :codigo, :denominacao
+    attributes :codigo, :denominacao, :retorno, :origem, :circular
   end
 end
