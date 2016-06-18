@@ -14,8 +14,6 @@ class BusCache
   LIMIT_TIME_VEI = 5.minute
 
   def initialize
-    @buses_by_code = {}
-    @buses_by_line = {}
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
   end
 
@@ -33,7 +31,7 @@ class BusCache
     veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
     load_in_map(veiculos)
     veiculos = @buses_by_line[cod_linha]
-    veiculos ? valids(veiculos.values) : veiculos
+    veiculos ? valids(veiculos.values) : nil
   end
 
   def updated?
@@ -51,6 +49,7 @@ class BusCache
       hora_as_array = veiculo.hora.split(':')
       hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
       time_veic = now.change(hash_h)
+      puts "#{veiculo.codigo} = #{hash_h} = #{ time_veic >= LIMIT_TIME_VEI.ago}"
       return time_veic >= LIMIT_TIME_VEI.ago
     end
     false
@@ -62,6 +61,7 @@ class BusCache
 
   def update
     unless updated?
+      reset() if(!@last_update || @last_update.day != now.day)
       @last_update = now
       veiculos = StransAPi.instance.get(:veiculos)
       load_in_map(veiculos)
@@ -98,7 +98,8 @@ class BusCache
 
   def reset
     @buses_by_code = {}
-    @buses_by_lines = {}
+    @buses_by_line = {}
+    @last_update = nil
   end
 
 end
