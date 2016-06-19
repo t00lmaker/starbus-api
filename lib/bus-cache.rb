@@ -28,6 +28,7 @@ class BusCache
   end
 
   def get_by_line(cod_linha)
+    update()
     veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
     load_in_map(veiculos)
     veiculos = @buses_by_line[cod_linha]
