@@ -78,22 +78,24 @@ ActiveRecord::Schema.define(version: 20160605104908) do
   add_index "reputations", ["veiculo_id"], name: "index_reputations_on_veiculo_id", using: :btree
 
   create_table "tokens", force: :cascade do |t|
-    t.string   "hash_id"
+    t.string   "hash_random"
     t.integer  "validate_to", default: 10
     t.integer  "user_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
   end
 
-  add_index "tokens", ["hash_id"], name: "index_tokens_on_hash_id", using: :btree
+  add_index "tokens", ["hash_random"], name: "index_tokens_on_hash_random", using: :btree
   add_index "tokens", ["user_id"], name: "index_tokens_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "name"
-    t.string   "facebook"
-    t.text     "hash_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "email"
+    t.string   "url_facebook"
+    t.string   "url_photo"
+    t.text     "id_facebook"
+    t.datetime "created_at",   null: false
+    t.datetime "updated_at",   null: false
   end
 
   create_table "veiculos", force: :cascade do |t|

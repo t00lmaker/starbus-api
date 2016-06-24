@@ -11,6 +11,7 @@ require './lib/load_linhas_paradas'
 require './lib/load_veiculos'
 require './lib/client-strans'
 require './lib/bus-cache'
+require './lib/face-control'
 require 'grape-rabl'
 
 module StarBus
@@ -21,12 +22,28 @@ module StarBus
     formatter :json, Grape::Formatter::Rabl
 
     before do
-      puts headers['Token']
+      #puts headers['User-id']
+      #puts headers['Token']
     end
 
     helpers do
       def current_user
         User.all.first
+      end
+    end
+
+    resource :user do
+      params do
+        requires :user, desc: 'Código identificador do facebook do usuário.'
+        requires :hash, desc: 'hash de autenticação facebook.'
+        optional :name, desc: 'Nome do usuario.'
+        optional :email, desc: 'E-mail do usuario.'
+        optional :url_photo, desc: 'E-mail do usuario.'
+        optional :url_face, desc: 'Nome do usuario.'
+      end
+      post :login do
+        hash = FaceControl.instance.auth(params)
+        "{\"hash\": '#{hash}'}"
       end
     end
 
@@ -147,8 +164,6 @@ module StarBus
     params do
       requires :type, values: ['con','seg','mov','pon','ace','est']
       requires :codigo
-      optional :evaluation, values: Interaction.evaluations.values
-      optional :comment
     end
     resource :interactions do
 
@@ -168,9 +183,14 @@ module StarBus
         @interactions = @reputation.interactions_type(@type)
       end
 
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+        requires :id_facebook
+      end
       post ':type/parada/:codigo' do
         i = Interaction.new
-        i.user = current_user
+        i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
@@ -179,9 +199,14 @@ module StarBus
         parada.reputation.interactions << i
         parada.save!
       end
+
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+      end
       post ':type/veiculo/:codigo' do
         i = Interaction.new
-        i.user = current_user
+        i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
