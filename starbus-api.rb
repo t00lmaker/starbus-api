@@ -43,7 +43,7 @@ module StarBus
       end
       post :login do
         hash = FaceControl.instance.auth(params)
-        "{\"hash\": '#{hash}'}"
+        { "hash" => hash}
       end
     end
 
