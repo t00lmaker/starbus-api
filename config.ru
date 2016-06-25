@@ -5,6 +5,7 @@ require './lib/load-config'
 require 'rabl'
 
 require File.expand_path('starbus-api', File.dirname(__FILE__))
+require File.expand_path('starbus-web', File.dirname(__FILE__))
 
 db_config       = YAML::load(File.open('config/database.yml'))
 db_config       = db_config[ENV['database_env']] # carrega as configurações do banco.
@@ -22,4 +23,6 @@ Rabl.configure do |config|
   config.exclude_empty_values_in_collections = false
 end
 
-run StarBus::API
+run Rack::URLMap.new("/" => StarBus::Web.new,
+                     "/api" => StarBus::API)
+#run StarBus::API

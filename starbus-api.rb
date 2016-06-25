@@ -17,7 +17,6 @@ require 'grape-rabl'
 module StarBus
   class API < Grape::API
     version 'v1'
-    prefix  :api
     format  :json
     formatter :json, Grape::Formatter::Rabl
 

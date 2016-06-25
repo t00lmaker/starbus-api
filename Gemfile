@@ -30,6 +30,8 @@ gem 'grape-rabl'
 #https://github.com/kylewlacy/timerizer
 gem 'timerizer'
 
+gem 'sinatra'
+
 group :development do
   # Debug code Ruby require 'pry' and binding.pry
   # for define breakpoint.
