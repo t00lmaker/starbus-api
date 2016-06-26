@@ -15,7 +15,11 @@ class StransAPi
 
   # Chamdadas aos servicos padroes da API
   def get(path, busca=nil)
-    @client.get(path, busca)
+    begin
+      return @client.get(path, busca)
+    rescue
+      return nil
+    end
   end
 
   RAIO_TERRA = 6378.137 #KM
