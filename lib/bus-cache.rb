@@ -52,7 +52,6 @@ class BusCache
       time_veic = now.change(hash_h)
       puts "#{veiculo.codigo} = #{hash_h} = #{ time_veic >= LIMIT_TIME_VEI.ago}"
       return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
-
     end
     false
   end

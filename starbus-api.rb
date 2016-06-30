@@ -14,6 +14,8 @@ require './lib/bus-cache'
 require './lib/face-control'
 require 'grape-rabl'
 
+I18n.config.available_locales = :en
+
 module StarBus
   class API < Grape::API
     version 'v1'
@@ -54,12 +56,23 @@ module StarBus
       get '/', :rabl => "linhas.rabl" do
         busca = params[:busca]
         if(busca)
-          #TODO colocar origem e retorno aqui.
-          @linhas = Linha.where("codigo like ? OR denominacao like ?", "%#{busca}%", "%#{busca.upcase}%")
+          puts busca
+          sql = "codigo like ? OR denominacao like ? OR retorno like ?"
+          busca = ActiveSupport::Inflector.transliterate(busca)
+          busca = busca.upcase
+          split = busca.split
+          @linhas = Set.new
+          split.each do |termo|
+            if(termo.size > 2)
+              puts "> #{ termo }"
+              @linhas = @linhas + Linha
+                          .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
+                          .order("codigo asc")
+            end
+          end
         else
-          @linhas = Linha.all
+          @linhas = Linha.order(:codigo)
         end
-        #error!({ erro: 'Linha nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
       end
 
       desc 'Recarrega todas as Linhas e salva com base na API Integrah.'
@@ -73,7 +86,7 @@ module StarBus
       get 'parada/:codigo', :rabl => "linhas.rabl" do
         parada = Parada.find_by_codigo(params[:codigo])
         if parada
-          @linhas = parada.linhas
+          @linhas = parada.linhas.order('codigo ASC')
         else
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         end
