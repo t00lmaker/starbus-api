@@ -7,6 +7,7 @@ require './model/interaction'
 require './model/checkin'
 require './model/token'
 require './model/user'
+require './model/sugestion'
 require './lib/load_linhas_paradas'
 require './lib/load_veiculos'
 require './lib/client-strans'
@@ -45,6 +46,22 @@ module StarBus
       post :login do
         hash = FaceControl.instance.auth(params)
         { "hash" => hash}
+      end
+
+      params do
+        optional :user, desc: 'Código identificador do facebook do usuário.'
+        optional :email, desc: 'E-mail do usuario.'
+        requires :text, desc: 'Texto da susgestão'
+      end
+      post :sugestion do
+        puts ">>>> #{params[:email]}"
+        if(params[:user])
+          @user = User.find_by_id_facebook(params[:hash]) if params[:user]
+        elsif(params[:email])
+          @user = User.find_by_email(params[:email])
+          @user = User.create(email: params[:email]) unless @user
+        end
+        Sugestion.create(user: @user, text: params[:text]) != nil
       end
     end
 
