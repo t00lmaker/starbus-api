@@ -54,7 +54,6 @@ module StarBus
         requires :text, desc: 'Texto da susgestão'
       end
       post :sugestion do
-        puts ">>>> #{params[:email]}"
         if(params[:user])
           @user = User.find_by_id_facebook(params[:hash]) if params[:user]
         elsif(params[:email])
