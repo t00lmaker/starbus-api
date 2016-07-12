@@ -1,5 +1,5 @@
 collection @veiculos, :root => :veiculos, :object_root => false
-attributes :codigo, :hora, :lat, :long
+attributes :codigo, :hora, :lat, :long, :last_lat, :last_long
 child :reputation do |ele|
   node(:mov){ ele.media('MOVIMENTACAO') }
   node(:est){ ele.media('ESTADO') }

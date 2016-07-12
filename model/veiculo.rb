@@ -3,7 +3,7 @@ require "active_record"
 class Veiculo < ActiveRecord::Base
   has_one :reputation
 
-  attr_accessor  :hora, :lat, :long, :linha
+  attr_accessor  :hora, :lat, :long, :last_lat, :last_long, :linha
 
   # faz o merge entre dois veiculos.
   def merge(veiculo_strans)

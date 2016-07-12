@@ -93,8 +93,17 @@ class BusCache
       veiculo.reputation = Reputation.new
     end
     veiculo.merge(veiculo_strans)
+    load_last_position(veiculo)
     veiculo.save unless veiculo.persisted?
     veiculo
+  end
+
+  def load_last_position(veiculo)
+    last_veiculo = @buses_by_code[veiculo.codigo]
+    if(last_veiculo)
+      veiculo.last_lat = last_veiculo.lat
+      veiculo.last_long = last_veiculo.long
+    end
   end
 
   def reset
