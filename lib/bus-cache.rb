@@ -101,8 +101,13 @@ class BusCache
   def load_last_position(veiculo)
     last_veiculo = @buses_by_code[veiculo.codigo]
     if(last_veiculo)
-      veiculo.last_lat = last_veiculo.lat
-      veiculo.last_long = last_veiculo.long
+      if(last_veiculo.lat == veiculo.lat && last_veiculo.long == veiculo.long)
+        veiculo.last_lat = last_veiculo.last_lat
+        veiculo.last_long = last_veiculo.last_long
+      else
+        veiculo.last_lat = last_veiculo.lat
+        veiculo.last_long = last_veiculo.long
+      end
     end
   end
 

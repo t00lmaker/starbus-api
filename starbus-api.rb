@@ -140,6 +140,11 @@ module StarBus
       end
       get :proximas, :rabl => "paradas.rabl" do
         @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
+        puts @paradas
+        if(!@paradas || @paradas.empty?)
+          puts "Ula"
+          @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
+        end
       end
 
     end
@@ -260,6 +265,10 @@ module StarBus
           lon = params[:long]
           lat = params[:lat]
           @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
+          if(!@paradas || @paradas.empty?)
+            puts "Ula"
+            @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
+          end
           @veiculos = BusCache.instance.get_by_line(params[:codigo])
           return
         end
