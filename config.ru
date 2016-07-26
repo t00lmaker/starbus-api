@@ -20,10 +20,8 @@ puts "Url database = #{ENV["DATABASE_URL"]}"
 puts "Configuration Env. = #{db_config[ENV['database_env']]}"
 
 db_config       = ENV["DATABASE_URL"] || db_config[ENV['database_env']]
-db_config['pool'] = ENV['DB_POOL'] || 5
+use ActiveRecord::ConnectionAdapters::ConnectionManagement
 ActiveRecord::Base.establish_connection(db_config)
-
-#use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 use Rack::Config do |env|
   env['api.tilt.root'] = 'rabl'

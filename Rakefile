@@ -6,6 +6,10 @@ require "./model/parada"
 require "grape/activerecord"
 require "active_record"
 
+# Carrega as variaveis de ambiente no arquivo env.yml
+# conforme o ambiente passado no segundo parametro.
+Envyable.load('./config/env.yml', CONFIG_ENV)
+Envyable.load('./config/env.yml', 'strans')
 
 namespace :gp do
   desc "Mostra todas as rotas da api."
