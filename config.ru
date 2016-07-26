@@ -1,6 +1,7 @@
 require 'envyable'
-require 'active_record'
 require 'rabl'
+require 'grape/activerecord'
+require 'active_record'
 
 require File.expand_path('starbus-api', File.dirname(__FILE__))
 require File.expand_path('starbus-web', File.dirname(__FILE__))
@@ -19,9 +20,14 @@ db_config       = YAML::load(File.open('config/database.yml'))
 puts "Url database = #{ENV["DATABASE_URL"]}"
 puts "Configuration Env. = #{db_config[ENV['database_env']]}"
 
-db_config       = ENV["DATABASE_URL"] || db_config[ENV['database_env']]
+db_config = db_config[ENV['database_env']]
 
-ActiveRecord::Base.establish_connection(db_config)
+if(ENV["DATABASE_URL"])
+  Grape::ActiveRecord.configure_from_url!(ENV["DATABASE_URL"])
+else
+  Grape::ActiveRecord.configure_from_hash!(db_config)
+end
+
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 use Rack::Config do |env|
