@@ -15,9 +15,9 @@ Envyable.load('./config/env.yml', 'strans')
 # Configura o banco de dados,caso não encontre valor para ENV ["DATABASE_URL"] (heroku)
 # ele carrega a configuração do ambiente do arquivo env.yml.
 db_config       = YAML::load(File.open('config/database.yml'))
-puts db_config
-puts "----------"
-puts db_config[ENV['database_env']]
+
+puts "Url database = #{ENV["DATABASE_URL"]}"
+puts "Configuration Env. = #{db_config[ENV['database_env']]}"
 
 db_config       = ENV["DATABASE_URL"] || db_config[ENV['database_env']]
 ActiveRecord::Base.establish_connection(db_config)
