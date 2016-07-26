@@ -141,7 +141,6 @@ module StarBus
       end
       get :proximas, :rabl => "paradas.rabl" do
         @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
-        puts @paradas
         if(!@paradas || @paradas.empty?)
           @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
         end
