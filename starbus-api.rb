@@ -8,6 +8,7 @@ require './model/checkin'
 require './model/token'
 require './model/user'
 require './model/sugestion'
+require './model/result'
 require './lib/load_linhas_paradas'
 require './lib/load_veiculos'
 require './lib/client-strans'
@@ -216,38 +217,52 @@ module StarBus
         @interactions = @reputation.interactions_type(@type)
       end
 
+
+
       params do
         requires :evaluation, values: Interaction.evaluations.values
         requires :comment
         requires :id_facebook
       end
-      post ':type/parada/:codigo' do
+      post ':type/parada/:codigo',:rabl => "result.rabl" do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
+        @result = Result.new
         parada = Parada.find_by_codigo(params[:codigo])
-        parada.reputation ||= Reputation.new
-        parada.reputation.interactions << i
-        parada.save!
+        if(parada)
+          parada.reputation ||= Reputation.new
+          parada.reputation.interactions << i
+          @result.status = parada.save! ? "sucess" : "error"
+        else
+          @result.status = "error"
+          @result.mensage = "Parada não encontrada."
+        end
       end
 
       params do
         requires :evaluation, values: Interaction.evaluations.values
         requires :comment
+        requires :id_facebook
       end
-      post ':type/veiculo/:codigo' do
+      post ':type/veiculo/:codigo', :rabl => "result.rabl" do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
+        @result = Result.new
         veiculo = Veiculo.find_by_codigo(params[:codigo])
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        veiculo.reputation ||= Reputation.new
-        veiculo.reputation.interactions << i
-        veiculo.save!
+        if(veiculo)
+          veiculo.reputation ||= Reputation.new
+          veiculo.reputation.interactions << i
+          @result.status = veiculo.save! ? "sucess" : "error"
+        else
+          @result.status = "error"
+          @result.mensage = "Veiculo não encontrado."
+        end
       end
     end
 
@@ -266,7 +281,6 @@ module StarBus
           lat = params[:lat]
           @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
           if(!@paradas || @paradas.empty?)
-            puts "Ula"
             @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
           end
           @veiculos = BusCache.instance.get_by_line(params[:codigo])
