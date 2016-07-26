@@ -5,6 +5,7 @@ require "./model/linha"
 require "./model/parada"
 require "grape/activerecord"
 require "active_record"
+require 'envyable'
 
 # Carrega as variaveis de ambiente no arquivo env.yml
 # conforme o ambiente passado no segundo parametro.
