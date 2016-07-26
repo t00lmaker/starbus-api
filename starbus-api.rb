@@ -153,6 +153,7 @@ module StarBus
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
+        puts ENV["DATABASE_URL"]
         @veiculos = BusCache.instance.all
       end
 
