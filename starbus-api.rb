@@ -217,52 +217,51 @@ module StarBus
 
 
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-        requires :id_facebook
-      end
-      post ':type/parada/:codigo',:rabl => "result.rabl" do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        @result = Result.new
-        parada = Parada.find_by_codigo(params[:codigo])
-        if(parada)
-          parada.reputation ||= Reputation.new
-          parada.reputation.interactions << i
-          @result.status = parada.save! ? "sucess" : "error"
-        else
-          @result.status = "error"
-          @result.mensage = "Parada não encontrada."
-        end
-      end
+    #  params do
+    #    requires :evaluation, values: Interaction.evaluations.values
+    #    requires :comment
+    #    requires :id_facebook
+    #  end
+    #  post ':type/parada/:codigo',:rabl => "result.rabl" do
+    #    i = Interaction.new
+    #    i.user = User.find_by_id_facebook(params[:id_facebook])
+    #    i.type_ = params[:type]
+    #    i.comment = params[:comment]
+    #    i.evaluation = params[:evaluation]
+    #    @result = Result.new
+    #    parada = Parada.find_by_codigo(params[:codigo])
+    #    if(parada)
+    #      parada.reputation ||= Reputation.new
+    #      parada.reputation.interactions << i
+    #      @result.status = parada.save! ? "sucess" : "error"
+    #    else
+    #      @result.status = "error"
+    #      @result.mensage = "Parada não encontrada."
+    #    end
+    #  end
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-        requires :id_facebook
-      end
-      post ':type/veiculo/:codigo', :rabl => "result.rabl" do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        @result = Result.new
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        if(veiculo)
-          veiculo.reputation ||= Reputation.new
-          veiculo.reputation.interactions << i
-          @result.status = veiculo.save! ? "sucess" : "error"
-        else
-          @result.status = "error"
-          @result.mensage = "Veiculo não encontrado."
-        end
-      end
-    end
+    #  params do
+    #    requires :evaluation, values: Interaction.evaluations.values
+    #    requires :comment
+    #    requires :id_facebook
+    #  end
+    #  post ':type/veiculo/:codigo', :rabl => "result.rabl" do
+    #    i = Interaction.new
+    #    i.user = User.find_by_id_facebook(params[:id_facebook])
+    #    i.type_ = params[:type]
+    #    i.comment = params[:comment]
+    #    i.evaluation = params[:evaluation]
+    #    @result = Result.new
+    #    veiculo = Veiculo.find_by_codigo(params[:codigo])
+    #      veiculo.reputation ||= Reputation.new
+    #      veiculo.reputation.interactions << i
+    #      @result.status = veiculo.save! ? "sucess" : "error"
+    #    else
+    ##      @result.mensage = "Veiculo não encontrado."
+      #  end
+      # end
+
+   end
 
     RAIO_BUSCA_APP = 500
 
