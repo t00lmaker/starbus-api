@@ -19,7 +19,7 @@ db_config       = YAML::load(File.open('config/database.yml'))
 puts "Url database = #{ENV["DATABASE_URL"]}"
 puts "Configuration Env. = #{db_config[ENV['database_env']]}"
 
-db_config       = ENV["DATABASE_URL"] || db_config[ENV['database_env']]
+db_config       = db_config[ENV['database_env']]
 ActiveRecord::Base.establish_connection(db_config)
 use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
