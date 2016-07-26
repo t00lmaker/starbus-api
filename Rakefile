@@ -1,6 +1,5 @@
 require "yaml"
 require "grape"
-require "./lib/load-config"
 require "./starbus-api"
 require "./model/linha"
 require "./model/parada"
