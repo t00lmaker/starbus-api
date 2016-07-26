@@ -5,7 +5,7 @@ require 'rabl'
 require File.expand_path('starbus-api', File.dirname(__FILE__))
 require File.expand_path('starbus-web', File.dirname(__FILE__))
 
-CONFIG_ENV = 'production'
+CONFIG_ENV = 'development'
 
 # Carrega as variaveis de ambiente no arquivo env.yml
 # conforme o ambiente passado no segundo parametro.
@@ -19,9 +19,11 @@ db_config       = YAML::load(File.open('config/database.yml'))
 puts "Url database = #{ENV["DATABASE_URL"]}"
 puts "Configuration Env. = #{db_config[ENV['database_env']]}"
 
-db_config       = db_config[ENV['database_env']]
+db_config       = ENV["DATABASE_URL"] || db_config[ENV['database_env']]
+db_config['pool'] ||= ENV['DB_POOL'] || 5
 ActiveRecord::Base.establish_connection(db_config)
-use ActiveRecord::ConnectionAdapters::ConnectionManagement
+
+#use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 use Rack::Config do |env|
   env['api.tilt.root'] = 'rabl'

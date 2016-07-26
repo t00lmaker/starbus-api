@@ -15,5 +15,3 @@ test: &test
   password:
 
 production:
-  url:  <%= ENV["DATABASE_URL"] %>
-  pool: <%= ENV["DB_POOL"] || 5 %>
