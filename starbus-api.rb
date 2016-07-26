@@ -143,7 +143,6 @@ module StarBus
         @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
         puts @paradas
         if(!@paradas || @paradas.empty?)
-          puts "Ula"
           @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
         end
       end
@@ -153,7 +152,6 @@ module StarBus
     resource :veiculos do
 
       get :agora, :rabl => "veiculos.rabl" do
-        puts ENV["DATABASE_URL"]
         @veiculos = BusCache.instance.all
       end
 
