@@ -9,6 +9,7 @@ require 'envyable'
 
 # Carrega as variaveis de ambiente no arquivo env.yml
 # conforme o ambiente passado no segundo parametro.
+CONFIG_ENV = 'development'
 Envyable.load('./config/env.yml', CONFIG_ENV)
 Envyable.load('./config/env.yml', 'strans')
 
