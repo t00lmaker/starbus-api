@@ -191,14 +191,11 @@ module StarBus
 
     end
 
-    # limite de interacitions por tela.
-    #LIMIT = 10
     params do
       requires :type, values: ['con','seg','mov','pon','ace','est']
       requires :codigo
     end
-    resource :interactions do
-
+    resource :interaction do
       get ':type/parada/:codigo', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
         parada = Parada.find_by_codigo(params[:codigo])
@@ -215,52 +212,110 @@ module StarBus
         @interactions = @reputation.interactions_type(@type)
       end
 
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+        requires :id_facebook
+      end
+      post ':type/parada/:codigo',:rabl => "result.rabl" do
+        i = Interaction.new
+        i.user = User.find_by_id_facebook(params[:id_facebook])
+        i.type_ = params[:type]
+        i.comment = params[:comment]
+        i.evaluation = params[:evaluation]
+        @result = Result.new
+        parada = Parada.find_by_codigo(params[:codigo])
+        if(parada)
+          parada.reputation ||= Reputation.new
+          parada.reputation.interactions << i
+          @result.status = parada.save! ? "sucess" : "error"
+        else
+          @result.status = "error"
+          @result.mensage = "Parada não encontrada."
+        end
+      end
 
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+        requires :id_facebook
+      end
+      post ':type/veiculo/:codigo', :rabl => "result.rabl" do
+        i = Interaction.new
+        i.user = User.find_by_id_facebook(params[:id_facebook])
+        i.type_ = params[:type]
+        i.comment = params[:comment]
+        i.evaluation = params[:evaluation]
+        @result = Result.new
+        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        if(veiculo)
+          veiculo.reputation ||= Reputation.new
+          veiculo.reputation.interactions << i
+          @result.status = veiculo.save! ? "sucess" : "error"
+        else
+          @result.mensage = "Veiculo não encontrado."
+        end
+       end
+    end
 
-    #  params do
-    #    requires :evaluation, values: Interaction.evaluations.values
-    #    requires :comment
-    #    requires :id_facebook
-    #  end
-    #  post ':type/parada/:codigo',:rabl => "result.rabl" do
-    #    i = Interaction.new
-    #    i.user = User.find_by_id_facebook(params[:id_facebook])
-    #    i.type_ = params[:type]
-    #    i.comment = params[:comment]
-    #    i.evaluation = params[:evaluation]
-    #    @result = Result.new
-    #    parada = Parada.find_by_codigo(params[:codigo])
-    #    if(parada)
-    #      parada.reputation ||= Reputation.new
-    #      parada.reputation.interactions << i
-    #      @result.status = parada.save! ? "sucess" : "error"
-    #    else
-    #      @result.status = "error"
-    #      @result.mensage = "Parada não encontrada."
-    #    end
-    #  end
+    # limite de interacitions por tela.
+    #LIMIT = 10
+    params do
+      requires :type, values: ['con','seg','mov','pon','ace','est']
+      requires :codigo
+    end
+    resource :interactions do
 
-    #  params do
-    #    requires :evaluation, values: Interaction.evaluations.values
-    #    requires :comment
-    #    requires :id_facebook
-    #  end
-    #  post ':type/veiculo/:codigo', :rabl => "result.rabl" do
-    #    i = Interaction.new
-    #    i.user = User.find_by_id_facebook(params[:id_facebook])
-    #    i.type_ = params[:type]
-    #    i.comment = params[:comment]
-    #    i.evaluation = params[:evaluation]
-    #    @result = Result.new
-    #    veiculo = Veiculo.find_by_codigo(params[:codigo])
-    #      veiculo.reputation ||= Reputation.new
-    #      veiculo.reputation.interactions << i
-    #      @result.status = veiculo.save! ? "sucess" : "error"
-    #    else
-    ##      @result.mensage = "Veiculo não encontrado."
-      #  end
-      # end
+      get ':type/parada/:codigo', :rabl => "interactions.rabl" do
+        @type = Interaction.type_s[params[:type]]
+        parada = Parada.find_by_codigo(params[:codigo])
+        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
+        @reputation = parada.reputation
+        @interactions = @reputation.interactions_type(@type)
+      end
 
+      get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
+        codigo = params[:codigo]
+        @type = Interaction.type_s[params[:type]]
+        veiculo = Veiculo.find_by_codigo(codigo)
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
+        @reputation = veiculo.reputation
+        @interactions = @reputation.interactions_type(@type)
+      end
+
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+        requires :id_facebook
+      end
+      post ':type/parada/:codigo' do
+        i = Interaction.new
+        i.user = User.find_by_id_facebook(params[:id_facebook])
+        i.type_ = params[:type]
+        i.comment = params[:comment]
+        i.evaluation = params[:evaluation]
+        parada = Parada.find_by_codigo(params[:codigo])
+        parada.reputation ||= Reputation.new
+        parada.reputation.interactions << i
+        parada.save!
+      end
+
+      params do
+        requires :evaluation, values: Interaction.evaluations.values
+        requires :comment
+      end
+      post ':type/veiculo/:codigo' do
+        i = Interaction.new
+        i.user = User.find_by_id_facebook(params[:id_facebook])
+        i.type_ = params[:type]
+        i.comment = params[:comment]
+        i.evaluation = params[:evaluation]
+        veiculo = Veiculo.find_by_codigo(params[:codigo])
+        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
+        veiculo.reputation ||= Reputation.new
+        veiculo.reputation.interactions << i
+        veiculo.save!
+      end
    end
 
     RAIO_BUSCA_APP = 500
