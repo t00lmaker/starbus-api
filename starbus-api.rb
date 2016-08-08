@@ -112,16 +112,16 @@ module StarBus
 
     resource :paradas do
       params do
-        optional :codigo, desc: 'código da linha'
+        requires :codigo, desc: 'código da linha'
       end
       desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
-      get '/', :rabl => "paradas_basic.rabl"  do
-        if(params[:codigo])
+      get '/', :rabl => "paradas.rabl"  do
           @paradas = Parada.find_by_codigo(params[:codigo]) ||
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
-        else
-          @paradas = Parada.includes(:linhas)
-        end
+      end
+
+      get :all, :rabl => "paradas_basic.rabl" do
+        @paradas = Parada.includes(:linhas)
       end
 
       params do
