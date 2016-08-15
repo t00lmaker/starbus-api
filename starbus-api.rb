@@ -342,5 +342,16 @@ module StarBus
       end
     end
 
+    resource :trello do
+      get :card do
+        puts "GET : #{params}"
+        "{'result':'ok' }"
+      end
+      post :card do
+        puts "POST : #{params}"
+        "{'result':'ok' }"
+      end
+    end
+
   end #class
 end #module
