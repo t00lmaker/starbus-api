@@ -42,9 +42,12 @@ group :test do
   gem 'rspec'
 
   # Mock Requests. https://github.com/bblimke/webmock
-  gem 'webmock'
+  #gem 'webmock'
 
   # Record your test suite's HTTP interactions. https://github.com/vcr/vcr
-  gem 'vcr'
+  #gem 'vcr'
+
+  #teste para web apis https://github.com/brooklynDev/airborne
+  gem 'airborne'
 
 end

@@ -14,7 +14,12 @@ GEM
       minitest (~> 5.1)
       thread_safe (~> 0.3, >= 0.3.4)
       tzinfo (~> 1.1)
-    addressable (2.4.0)
+    airborne (0.2.7)
+      activesupport (>= 3.0, < 5.0)
+      rack (< 2.0)
+      rack-test (~> 0.6, >= 0.6.2)
+      rest-client (>= 1.7.3, < 3.0)
+      rspec (~> 3.1)
     arel (6.0.3)
     axiom-types (0.1.1)
       descendants_tracker (~> 0.0.4)
@@ -24,11 +29,11 @@ GEM
     coderay (1.1.1)
     coercible (1.0.0)
       descendants_tracker (~> 0.0.1)
-    crack (0.4.3)
-      safe_yaml (~> 1.0.0)
     descendants_tracker (0.0.4)
       thread_safe (~> 0.3, >= 0.3.1)
     diff-lcs (1.2.5)
+    domain_name (0.5.20160826)
+      unf (>= 0.0.5, < 1.0.0)
     enumerable-lazy (0.0.1)
     envyable (1.0.0)
     equalizer (0.0.11)
@@ -51,19 +56,24 @@ GEM
       i18n
       rabl
       tilt
-    hashdiff (0.3.0)
     hashie (3.4.4)
     hashie-forbidden_attributes (0.1.1)
       hashie (>= 3.0)
+    http-cookie (1.0.2)
+      domain_name (~> 0.5)
     i18n (0.7.0)
     ice_nine (0.11.2)
     json (1.8.3)
     method_source (0.8.2)
+    mime-types (3.1)
+      mime-types-data (~> 3.2015)
+    mime-types-data (3.2016.0521)
     minitest (5.9.0)
     multi_json (1.12.1)
     multi_xml (0.5.5)
     mustermann19 (0.4.3)
       enumerable-lazy
+    netrc (0.11.0)
     pg (0.18.4)
     pry (0.10.3)
       coderay (~> 1.1.0)
@@ -76,6 +86,12 @@ GEM
       rack (>= 0.4)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    rest-client (2.0.0)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -89,7 +105,6 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.4.0)
     rspec-support (3.4.1)
-    safe_yaml (1.0.4)
     sinatra (1.4.7)
       rack (~> 1.5)
       rack-protection (~> 1.4)
@@ -101,22 +116,21 @@ GEM
     timerizer (0.1.4)
     tzinfo (1.2.2)
       thread_safe (~> 0.1)
-    vcr (3.0.3)
+    unf (0.1.4)
+      unf_ext
+    unf_ext (0.0.7.2)
     virtus (1.0.5)
       axiom-types (~> 0.1)
       coercible (~> 1.0)
       descendants_tracker (~> 0.0, >= 0.0.3)
       equalizer (~> 0.0, >= 0.0.9)
-    webmock (2.1.0)
-      addressable (>= 2.3.6)
-      crack (>= 0.3.2)
-      hashdiff
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   activerecord
+  airborne
   envyable
   grape
   grape-activerecord
@@ -127,8 +141,6 @@ DEPENDENCIES
   sinatra
   strans-client
   timerizer
-  vcr
-  webmock
 
 BUNDLED WITH
-   1.10.6
+   1.12.5

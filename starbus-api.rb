@@ -35,6 +35,12 @@ module StarBus
       end
     end
 
+    resource :test do
+      get '/' do
+        { nome: 'John' }.to_json
+      end
+    end
+
     resource :user do
       params do
         requires :user, desc: 'Código identificador do facebook do usuário.'
