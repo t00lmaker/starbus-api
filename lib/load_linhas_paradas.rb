@@ -9,14 +9,17 @@ class LoadLinhasParadas
     strans = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
     linhas = strans.get(:linhas)
     linhas.each do |l|
-      linha = transform_in_linhas(l)
-      paradas = strans.get(:paradas_linha, linha.codigo)
-      if(!paradas.kind_of?(ErroStrans))
-        paradas = transform_in_paradas(paradas)
-        linha.paradas = paradas
+      has_linha = Linha.find_by_codigo(l.codigo)
+      unless(has_linha)
+        linha = transform_in_linhas(l)
+        paradas = strans.get(:paradas_linha, linha.codigo)
+        if(!paradas.kind_of?(ErroStrans))
+          paradas = transform_in_paradas(paradas)
+          linha.paradas = paradas
+        end
+        puts linha.codigo
+        linha.save!
       end
-      puts linha.codigo
-      linha.save!
     end
   end
 
