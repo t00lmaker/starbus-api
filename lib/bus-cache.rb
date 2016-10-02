@@ -123,7 +123,7 @@ class BusCache
   def save_snapshot
     unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
       Snapshot.create({value: @buses_by_line.to_json, data: Time.now - 3.hours})
-      @last_save = now
+      @last_save = Time.now 
     end
   end
 
