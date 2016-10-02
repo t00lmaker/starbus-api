@@ -2,6 +2,7 @@ require 'singleton'
 require 'lazy-strans-client'
 require 'timerizer'
 require './model/veiculo'
+require './model/snapshot'
 
 
 # Essa classe deve atualizar um cache
@@ -11,7 +12,8 @@ class BusCache
   include Singleton
 
   LIMIT_TIME_UPDATE = 20.seconds
-  LIMIT_TIME_VEI = 5.minute
+  LIMIT_TIME_VEI  = 5.minute
+  LIMIT_TIME_SAVE = 1.minute
 
   def initialize
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
@@ -67,6 +69,7 @@ class BusCache
       veiculos = StransAPi.instance.get(:veiculos)
       load_in_map(veiculos)
     end
+    save_snapshot
   end
 
   def load_in_map(veiculos_strans)
@@ -115,6 +118,13 @@ class BusCache
     @buses_by_code = {}
     @buses_by_line = {}
     @last_update = nil
+  end
+
+  def save_snapshot
+    unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
+      Snapshot.create({value: @buses_by_line.to_json})
+      @last_save = now
+    end
   end
 
 end

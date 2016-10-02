@@ -28,7 +28,7 @@ else
   Grape::ActiveRecord.configure_from_hash!(db_config)
 end
 
-use ActiveRecord::ConnectionAdapters::ConnectionManagement
+#use ActiveRecord::ConnectionAdapters::ConnectionManagement
 
 use Rack::Config do |env|
   env['api.tilt.root'] = 'rabl'
