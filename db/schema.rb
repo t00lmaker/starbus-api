@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -23,11 +22,10 @@ ActiveRecord::Schema.define(version: 20161001030617) do
     t.integer  "veiculo_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.index ["parada_id"], name: "index_checkins_on_parada_id", using: :btree
+    t.index ["user_id"], name: "index_checkins_on_user_id", using: :btree
+    t.index ["veiculo_id"], name: "index_checkins_on_veiculo_id", using: :btree
   end
-
-  add_index "checkins", ["parada_id"], name: "index_checkins_on_parada_id", using: :btree
-  add_index "checkins", ["user_id"], name: "index_checkins_on_user_id", using: :btree
-  add_index "checkins", ["veiculo_id"], name: "index_checkins_on_veiculo_id", using: :btree
 
   create_table "interactions", force: :cascade do |t|
     t.string   "type_"
@@ -37,10 +35,9 @@ ActiveRecord::Schema.define(version: 20161001030617) do
     t.integer  "user_id"
     t.datetime "created_at",    null: false
     t.datetime "updated_at",    null: false
+    t.index ["reputation_id"], name: "index_interactions_on_reputation_id", using: :btree
+    t.index ["user_id"], name: "index_interactions_on_user_id", using: :btree
   end
-
-  add_index "interactions", ["reputation_id"], name: "index_interactions_on_reputation_id", using: :btree
-  add_index "interactions", ["user_id"], name: "index_interactions_on_user_id", using: :btree
 
   create_table "linhas", force: :cascade do |t|
     t.string   "codigo"
@@ -72,13 +69,13 @@ ActiveRecord::Schema.define(version: 20161001030617) do
     t.integer  "parada_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["parada_id"], name: "index_reputations_on_parada_id", using: :btree
+    t.index ["veiculo_id"], name: "index_reputations_on_veiculo_id", using: :btree
   end
-
-  add_index "reputations", ["parada_id"], name: "index_reputations_on_parada_id", using: :btree
-  add_index "reputations", ["veiculo_id"], name: "index_reputations_on_veiculo_id", using: :btree
 
   create_table "snapshots", force: :cascade do |t|
     t.text     "value"
+    t.datetime "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
@@ -88,10 +85,9 @@ ActiveRecord::Schema.define(version: 20161001030617) do
     t.integer  "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["text"], name: "index_sugestions_on_text", using: :btree
+    t.index ["user_id"], name: "index_sugestions_on_user_id", using: :btree
   end
-
-  add_index "sugestions", ["text"], name: "index_sugestions_on_text", using: :btree
-  add_index "sugestions", ["user_id"], name: "index_sugestions_on_user_id", using: :btree
 
   create_table "tokens", force: :cascade do |t|
     t.string   "hash_random"
@@ -99,10 +95,9 @@ ActiveRecord::Schema.define(version: 20161001030617) do
     t.integer  "user_id"
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
+    t.index ["hash_random"], name: "index_tokens_on_hash_random", using: :btree
+    t.index ["user_id"], name: "index_tokens_on_user_id", using: :btree
   end
-
-  add_index "tokens", ["hash_random"], name: "index_tokens_on_hash_random", using: :btree
-  add_index "tokens", ["user_id"], name: "index_tokens_on_user_id", using: :btree
 
   create_table "users", force: :cascade do |t|
     t.string   "name"

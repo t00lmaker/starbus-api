@@ -13,7 +13,7 @@ class BusCache
 
   LIMIT_TIME_UPDATE = 20.seconds
   LIMIT_TIME_VEI  = 5.minute
-  LIMIT_TIME_SAVE = 1.minute
+  LIMIT_TIME_SAVE = 5.minute
 
   def initialize
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
@@ -122,8 +122,8 @@ class BusCache
 
   def save_snapshot
     unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
-      Snapshot.create({value: @buses_by_line.to_json, data: Time.now})
-      @last_save = Time.now
+      Snapshot.create({value: @buses_by_line.to_json, data: Time.now - 3.hours})
+      @last_save = now
     end
   end
 
