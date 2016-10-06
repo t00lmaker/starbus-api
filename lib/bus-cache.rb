@@ -122,7 +122,13 @@ class BusCache
 
   def save_snapshot
     unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
-      Snapshot.create({value: @buses_by_line.to_json, data: Time.now - 3.hours})
+      puts "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$"
+      linhas_buses = {}
+      @buses_by_line.each do |k,v|
+        linhas_buses[k] = v.values
+      end
+      #Rabl::Renderer.json(@post, 'posts/show')
+      Snapshot.create({value: linhas_buses.to_json, data: Time.now - 3.hours})
       @last_save = now
     end
   end

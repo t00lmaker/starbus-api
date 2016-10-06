@@ -15,4 +15,13 @@ class Veiculo < ActiveRecord::Base
     end
   end
 
+  def as_json (options=nil)
+    attrs = {}
+    attrs[:codigo] = self.codigo if self.codigo
+    attrs[:lat] = @lat if @lat
+    attrs[:long] = @long if @long
+    attrs[:hora] = @hora if @hora
+    attrs
+  end
+
 end
