@@ -12,7 +12,7 @@ module StarBus
     end
     get "/snapshots" do
       content_type :json
-      _snaps = Snapshot.where(data: 6.hour.ago..Time.now-3).order(:data)
+      _snaps = Snapshot.where(data: 6.hour.ago..Time.now).order(:data)
       @snaps = {}
       _snaps.each do |s|
         @snaps[s.data.strftime('%H:%M')] = JSON.parse(s.value)
