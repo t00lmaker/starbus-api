@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="utf-8">
+      <title>StarBus | Dashboard</title>
+    </head>
+    <body>
+      <div>
+        <canvas id="myChart"  width=100 height=20>
+        </canvas>
+      </div>
+
+      <script src="js/Chart.js"></script>
+      <script src="https://code.jquery.com/jquery-3.1.1.min.js"/></script>
+
+      <script>
+        $.ajax({
+          url: "snapshots",
+          context: document.body
+        }).done(function(json) {
+          console.log(json);
+
+          var horarios = Object.keys(json);
+          var qnt_buses = [];
+          var linhas, horario, total;
+
+          for (i = 0 ; i < horarios.length ; i++){
+            horario = horarios[i]
+            linhas_map = json[horario];
+            linhas_keys = Object.keys(json[horario]);
+            for (j = 0 ; j < linhas_keys.length ; j++){
+              if( !qnt_buses[horario]){qnt_buses[horario] = 0;}
+              qnt_buses[horario] = qnt_buses[horario] +  linhas_map[linhas_keys[j]].length;
+            }
+          }
+          console.log(qnt_buses);
+          var data = {
+            labels: horarios,
+            datasets: [
+                {
+                    label: "Número de Veículos em Circulação",
+                    fill: false,
+                    lineTension: 0.1,
+                    backgroundColor: "rgba(75,192,192,0.4)",
+                    borderColor: "rgba(75,192,192,1)",
+                    borderCapStyle: 'butt',
+                    borderDash: [],
+                    borderDashOffset: 0.0,
+                    borderJoinStyle: 'miter',
+                    pointBorderColor: "rgba(75,192,192,1)",
+                    pointBackgroundColor: "#fff",
+                    pointBorderWidth: 1,
+                    pointHoverRadius: 5,
+                    pointHoverBackgroundColor: "rgba(75,192,192,1)",
+                    pointHoverBorderColor: "rgba(220,220,220,1)",
+                    pointHoverBorderWidth: 2,
+                    pointRadius: 1,
+                    pointHitRadius: 10,
+                    data: Object.keys(qnt_buses).map(key => qnt_buses[key]),
+                    spanGaps: false,
+                }
+            ]
+          };
+
+          var ctx = document.getElementById("myChart");
+          $option = {
+            onClick : function (op1, op2){
+                          console.log(op1);
+                          console.log(op2);
+            }
+          }
+          var myLineChart = new Chart(ctx, {
+              type: 'line',
+              data: data,
+              options: $option
+          });
+
+        });
+      </script>
+    </body>
+</html>
