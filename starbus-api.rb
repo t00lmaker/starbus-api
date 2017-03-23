@@ -160,6 +160,10 @@ module StarBus
         @veiculos = BusCache.instance.all
       end
 
+      get "agora/count" do
+        { count: BusCache.instance.all.size }
+      end
+
       get :load do
         LoadVeiculos.new.init
       end
@@ -347,17 +351,5 @@ module StarBus
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
       end
     end
-
-    resource :trello do
-      get :card do
-        puts "GET : #{params}"
-        "{'result':'ok' }"
-      end
-      post :card do
-        puts "POST : #{params}"
-        "{'result':'ok' }"
-      end
-    end
-
   end #class
 end #module
