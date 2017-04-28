@@ -73,9 +73,21 @@ module StarBus
 
     resource :linhas do
       params do
+        requires :codigos, type: Array, desc: 'códigos da linhas que deseja'
+      end
+      get '/get', :rabl => "linhas.rabl" do
+        @linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
+        puts " >>>>>>>>"+@linhas.to_s
+        if !@linhas
+          error!({ erro: 'Linha não encontrada.', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+        end
+        @linhas
+      end
+
+      params do
         optional :busca, desc: 'termo para busca da linha.'
       end
-      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
+      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro busca.'
       get '/', :rabl => "linhas.rabl" do
         busca = params[:busca]
         if(busca)
@@ -114,6 +126,7 @@ module StarBus
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         end
       end
+
     end #resource :linha
 
     resource :paradas do
