@@ -370,7 +370,7 @@ module StarBus
         requires :long, type: Float
         requires :codigos, type: Array
       end
-      get "linha", :rabl => "paradas_veiculos.rabl" do
+      get "linha", :rabl => "paradas_veiculos0.rabl" do
         linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
         @veiculos = []
         @paradas = []
