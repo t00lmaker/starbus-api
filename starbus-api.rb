@@ -392,7 +392,8 @@ module StarBus
               @veiculos.concat(veiculos)
             end
           end
-
+          @paradas = Set.new(@paradas)
+          @veiculos = Set.new(@veiculos)
           return
         end
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o(s) codigo(s) da(s) linha(s) passado por parametro.' }, 404)
