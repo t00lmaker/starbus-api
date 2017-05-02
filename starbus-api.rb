@@ -77,7 +77,6 @@ module StarBus
       end
       get '/get', :rabl => "linhas.rabl" do
         @linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
-        puts " >>>>>>>>"+@linhas.to_s
         if !@linhas
           error!({ erro: 'Linha não encontrada.', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
         end
@@ -343,12 +342,13 @@ module StarBus
 
     RAIO_BUSCA_APP = 500
 
-    params do
-      requires :lat, type:  Float
-      requires :long, type: Float
-      requires :codigo
-    end
+
     resource :paradasveiculos do
+      params do
+        requires :lat, type:  Float
+        requires :long, type: Float
+        requires :codigo
+      end
       get "linha/:codigo", :rabl => "paradas_veiculos.rabl" do
         @linha = Linha.find_by_codigo(params[:codigo])
         if(@linha)
@@ -359,9 +359,43 @@ module StarBus
             @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
           end
           @veiculos = BusCache.instance.get_by_line(params[:codigo])
+          @veiculos.each{|v| v.linha = @linha.codigo }
           return
         end
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
+      end
+
+      params do
+        requires :lat, type:  Float
+        requires :long, type: Float
+        requires :codigos, type: Array
+      end
+      get "linha", :rabl => "paradas_veiculos.rabl" do
+        linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
+        @veiculos = []
+        @paradas = []
+        if(linhas && !linhas.empty? )
+          linhas.each do |linha|
+            lon = params[:long]
+            lat = params[:lat]
+            paradas = []
+            paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, linha.paradas)
+            if(paradas.empty?)
+              paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), linha.paradas)
+            end
+            if(!paradas.empty?)
+              @paradas.concat(paradas)
+            end
+            veiculos = BusCache.instance.get_by_line(linha.codigo)
+            if(veiculos && !veiculos.empty?)
+              veiculos.each{|v| v.linha = linha.codigo }
+              @veiculos.concat(veiculos)
+            end
+          end
+
+          return
+        end
+        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o(s) codigo(s) da(s) linha(s) passado por parametro.' }, 404)
       end
     end
   end #class
