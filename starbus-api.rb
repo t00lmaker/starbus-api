@@ -359,7 +359,7 @@ module StarBus
             @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
           end
           @veiculos = BusCache.instance.get_by_line(params[:codigo])
-          @veiculos.each{|v| v.linha = @linha.codigo }
+          @veiculos.each{|v| v.linha = @linha.codigo } if @veiculos
           return
         end
         error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
