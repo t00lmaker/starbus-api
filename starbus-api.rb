@@ -388,7 +388,7 @@ module StarBus
             end
             veiculos = BusCache.instance.get_by_line(linha.codigo)
             if(veiculos && !veiculos.empty?)
-              veiculos.each{|v| v.linha = linha.codigo }
+              veiculos.each{|v| v.codigo_linha = linha.codigo }
               @veiculos.concat(veiculos)
             end
           end
