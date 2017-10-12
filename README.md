@@ -1,20 +1,28 @@
 # StarBus API - 0.0.1
 
-Uma plataforma de crowdsourcing para usuário de Transporte público.
+Uma plataforma de crowdsourcing para usuário de transporte público de Teresina.
 
-##Organização
+### Organização
 
 StarBus é formada por três componentes principais:
 
-###Apps
+#### Apps
   Aplicativos iOs e Android em que usuários utilizar em seus smartphones em que
   os usuários de transporte publico pode interagir entre si e com a estrutura
   de transport público local.  
 
-###Dashboard
+#### Dashboard
   Dados públicos sobre o transporte público local construidos pela utilização da
   dos app, que são mostrados de forma a gerar informação relevante para a sociedade.
 
-###API
+#### API
   Core do Starbus que deve pode ser acessada via App, Dashboard e por outras aplições de
-  outros produtores de software.
+  outros produtores de software. Oferece as informações que alimentam a plataforma.  
+
+Esse repositorio guarda a api e a landpage do projeto.
+
+### O que você pode encontrar nesse repositorio ?
+
+ * Uma API implementada com o framwork [Grape](http://www.ruby-grape.org)
+ * Teste de uma api utilizando Rspec e [Airborne](https://github.com/brooklynDev/airborne)
+ * Uma API e uma aplicação rodando no mesmo servidor, utilizando dois frameworks diferentes Grape e Sinatra.
