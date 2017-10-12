@@ -12,6 +12,6 @@ bin
 vendor/bundle
 .project
 .DS_Store
-
+/config
 /doc
 /.yardoc
