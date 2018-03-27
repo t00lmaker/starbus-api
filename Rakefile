@@ -1,15 +1,18 @@
-require "yaml"
-require "grape"
-require "./starbus-api"
-require "./model/linha"
-require "./model/parada"
-require "grape/activerecord"
-require "active_record"
+require 'yaml'
+require 'grape'
 require 'envyable'
+require 'otr-activerecord'
+
+require_relative 'starbus-api'
+require_relative 'model/linha'
+require_relative 'model/parada'
+
+
+load 'tasks/otr-activerecord.rake'
 
 # Carrega as variaveis de ambiente no arquivo env.yml
 # conforme o ambiente passado no segundo parametro.
-CONFIG_ENV = 'development'
+CONFIG_ENV = 'development'.freeze
 Envyable.load('./config/env.yml', CONFIG_ENV)
 Envyable.load('./config/env.yml', 'strans')
 

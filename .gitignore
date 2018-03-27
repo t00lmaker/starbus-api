@@ -15,3 +15,5 @@ vendor/bundle
 /config
 /doc
 /.yardoc
+.vscode/
+.byebug_history

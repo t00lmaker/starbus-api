@@ -5,7 +5,7 @@ source "https://rubygems.org"
 gem 'grape'
 
 # A framework MOR Ruby (The Best)
-gem 'activerecord'
+#gem 'activerecord'
 
 # Adapter Postgres Ruby
 gem 'pg'
@@ -21,7 +21,8 @@ gem 'strans-client'
 
 #Ajuda a gerenciar conexoes com banco.
 #https://github.com/jhollinger/grape-activerecord
-gem "grape-activerecord"
+#gem "grape-activerecord"
+gem "otr-activerecord"
 
 #https://github.com/ruby-grape/grape-rabl
 gem 'grape-rabl'
@@ -33,9 +34,9 @@ gem 'timerizer'
 gem 'sinatra'
 
 group :development do
-  # Debug code Ruby require 'pry' and binding.pry
+  # Debug code Ruby require 'prbyebugy' and add 'byebug' in code
   # for define breakpoint.
-  gem 'pry'
+  gem 'byebug'
 end
 
 group :test do

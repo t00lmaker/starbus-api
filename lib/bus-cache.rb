@@ -1,13 +1,15 @@
 require 'singleton'
 require 'lazy-strans-client'
 require 'timerizer'
-require './model/veiculo'
-require './model/snapshot'
+require_relative '../model/veiculo'
+require_relative '../model/snapshot'
+require_relative '../model/linha'
+require 'byebug'
 
 
 # Essa classe deve atualizar um cache
 # da posicao de todos os onibus, retornando
-# ultima posição nos ultimos 3 minutos.
+# ultima posicao nos ultimos 3 minutos.
 class BusCache
   include Singleton
 
@@ -19,18 +21,18 @@ class BusCache
     @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
   end
 
-  def all()
-    update()
+  def all
+    update
     valids(@buses_by_code.values)
   end
 
   def get(codigo)
-    update()
+    update
     valid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] : nil
   end
 
   def get_by_line(cod_linha)
-    update()
+    update
     veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
     load_in_map(veiculos)
     veiculos = @buses_by_line[cod_linha]
@@ -47,12 +49,12 @@ class BusCache
     Time.now.utc.localtime("-03:00")
   end
 
+  # valida por meio do horario veiculos strans e starbus.
   def valid?(veiculo)
-    if (veiculo)
+    if veiculo
       hora_as_array = veiculo.hora.split(':')
       hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
       time_veic = now.change(hash_h)
-      puts "#{veiculo.codigo} = #{hash_h} = #{ time_veic >= LIMIT_TIME_VEI.ago}"
       return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
     end
     false
@@ -64,7 +66,7 @@ class BusCache
 
   def update
     unless updated?
-      reset() if(!@last_update || @last_update.day != now.day)
+      reset if(!@last_update || @last_update.day != now.day)
       @last_update = now
       veiculos = StransAPi.instance.get(:veiculos)
       load_in_map(veiculos)
@@ -74,24 +76,23 @@ class BusCache
 
   def load_in_map(veiculos_strans)
     veiculos_update = []
-    if(veiculos_strans && !veiculos_strans.is_a?(ErroStrans))
+    if veiculos_strans && !veiculos_strans.is_a?(ErroStrans)
       veiculos_strans.each do |veiculo_strans|
-        if(valid?(veiculo_strans))
-          veiculo = load_or_save(veiculo_strans)
-          veiculos_update << veiculo
-          @buses_by_code[veiculo.codigo] = veiculo
-          @buses_by_line[veiculo.linha.codigo] ||= {}
-          @buses_by_line[veiculo.linha.codigo][veiculo.codigo] = veiculo
-        end
+        next unless valid?(veiculo_strans)
+        veiculo = load_or_save(veiculo_strans)
+        veiculos_update << veiculo
+        @buses_by_code[veiculo.codigo] = veiculo
+        @buses_by_line[veiculo.linha.codigo] ||= {}
+        @buses_by_line[veiculo.linha.codigo][veiculo.codigo] = veiculo
       end
     end
     veiculos_update
   end
 
   def load_or_save(veiculo_strans)
-    codigo = veiculo_strans.codigo
+    codigo = veiculo_strans.codigoVeiculo
     veiculo = Veiculo.find_by_codigo(codigo)
-    unless(veiculo)
+    unless veiculo
       veiculo = Veiculo.new(codigo: codigo)
       veiculo.reputation = Reputation.new
     end
@@ -103,8 +104,8 @@ class BusCache
 
   def load_last_position(veiculo)
     last_veiculo = @buses_by_code[veiculo.codigo]
-    if(last_veiculo)
-      if(last_veiculo.lat == veiculo.lat && last_veiculo.long == veiculo.long)
+    if last_veiculo
+      if last_veiculo.lat == veiculo.lat && last_veiculo.long == veiculo.long
         veiculo.last_lat = last_veiculo.last_lat
         veiculo.last_long = last_veiculo.last_long
       else
@@ -130,5 +131,4 @@ class BusCache
       @last_save = now
     end
   end
-
 end
