@@ -4,7 +4,6 @@ require 'timerizer'
 require_relative '../model/veiculo'
 require_relative '../model/snapshot'
 require_relative '../model/linha'
-require 'byebug'
 
 
 # Essa classe deve atualizar um cache
