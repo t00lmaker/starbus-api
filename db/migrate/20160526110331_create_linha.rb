@@ -1,6 +1,6 @@
 class CreateLinha < ActiveRecord::Migration
   def self.up
-    # :codigoLinha, :denomicao, :origem,
+    # :codigoLinha, :denominacao, :origem,
     #  :retorno, :circular, :veiculos, :paradas
 
     create_table :linhas do |t|
