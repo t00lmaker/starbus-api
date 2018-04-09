@@ -37,6 +37,8 @@ group :development do
   # Debug code Ruby require 'prbyebugy' and add 'byebug' in code
   # for define breakpoint.
   gem 'byebug'
+  gem 'ruby-debug-ide'
+  gem 'debase'
 end
 
 group :test do

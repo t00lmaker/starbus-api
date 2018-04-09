@@ -16,5 +16,5 @@ vendor/bundle
 /doc
 /.yardoc
 .byebug_history
-.vscode/
-
+.vscode
+Gemfile.lock

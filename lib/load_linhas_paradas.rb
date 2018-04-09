@@ -9,7 +9,7 @@ class LoadLinhasParadas
     strans = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
     linhas = strans.get(:linhas)
     linhas.each do |l|
-      has_linha = Linha.find_by_codigo(l.codigo)
+      has_linha = Linha.find_by_codigo(l.codigoLinha)
       unless(has_linha)
         linha = transform_in_linhas(l)
         paradas = strans.get(:paradas_linha, linha.codigo)
@@ -30,6 +30,7 @@ class LoadLinhasParadas
     linha_strans.instance_variables.each do |var|
       attr_name = var.to_s.delete("@")
       attr_name = :codigo if attr_name == 'codigoLinha'
+      attr_name = :denominacao if attr_name == 'denomicao'
       linha_hash[attr_name] = linha_strans.instance_variable_get(var)
     end
     linha_hash = linha_hash.except("veiculos")
@@ -44,11 +45,12 @@ class LoadLinhasParadas
       p.instance_variables.each do |var|
         attr_name = var.to_s.delete("@")
         attr_name = :codigo if attr_name == 'codigoParada'
+        attr_name = :denominacao if attr_name == 'denomicao'
         parada_hash[attr_name] = p.instance_variable_get(var)
       end
       parada_hash = parada_hash.except("linha")
-      parada = @paradas[p.codigo] || Parada.new(parada_hash)
-      @paradas[p.codigo] = parada
+      parada = @paradas[p.codigoParada] || Parada.new(parada_hash)
+      @paradas[p.codigoParada] = parada
       parada.reputation ||= Reputation.new
       paradas << parada
     end

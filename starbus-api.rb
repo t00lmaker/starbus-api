@@ -114,6 +114,7 @@ module StarBus
         LoadLinhasParadas.new.init
       end
 
+      desc 'Pega as linhas da para com o código passado.'
       params do
         requires :codigo, desc: 'código da parada que deseja as linhas.'
       end
@@ -129,10 +130,11 @@ module StarBus
     end #resource :linha
 
     resource :paradas do
+      
+      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
       params do
         requires :codigo, desc: 'código da linha'
       end
-      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
       get '/', :rabl => "paradas.rabl"  do
           @paradas = Parada.find_by_codigo(params[:codigo]) ||
           error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
