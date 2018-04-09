@@ -133,6 +133,7 @@ DEPENDENCIES
   grape-rabl
   otr-activerecord
   pg
+  rake
   rspec
   ruby-debug-ide
   sinatra
