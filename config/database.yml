@@ -2,7 +2,7 @@ development:
   adapter: postgresql
   host: localhost
   encoding: utf-8
-  database: starbus-api #starbus_development
+  database: starbus #starbus_development
   pool: 5
   username: postgres
   password:

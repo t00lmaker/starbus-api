@@ -15,102 +15,102 @@ ActiveRecord::Schema.define(version: 20161001030617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "checkins", force: :cascade do |t|
-    t.integer  "validate_to", default: 10
-    t.integer  "user_id"
-    t.integer  "parada_id"
-    t.integer  "veiculo_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.index ["parada_id"], name: "index_checkins_on_parada_id", using: :btree
-    t.index ["user_id"], name: "index_checkins_on_user_id", using: :btree
-    t.index ["veiculo_id"], name: "index_checkins_on_veiculo_id", using: :btree
+  create_table "checkins", id: :serial, force: :cascade do |t|
+    t.integer "validate_to", default: 10
+    t.integer "user_id"
+    t.integer "parada_id"
+    t.integer "veiculo_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parada_id"], name: "index_checkins_on_parada_id"
+    t.index ["user_id"], name: "index_checkins_on_user_id"
+    t.index ["veiculo_id"], name: "index_checkins_on_veiculo_id"
   end
 
-  create_table "interactions", force: :cascade do |t|
-    t.string   "type_"
-    t.string   "evaluation"
-    t.text     "comment"
-    t.integer  "reputation_id"
-    t.integer  "user_id"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.index ["reputation_id"], name: "index_interactions_on_reputation_id", using: :btree
-    t.index ["user_id"], name: "index_interactions_on_user_id", using: :btree
+  create_table "interactions", id: :serial, force: :cascade do |t|
+    t.string "type_"
+    t.string "evaluation"
+    t.text "comment"
+    t.integer "reputation_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["reputation_id"], name: "index_interactions_on_reputation_id"
+    t.index ["user_id"], name: "index_interactions_on_user_id"
   end
 
-  create_table "linhas", force: :cascade do |t|
-    t.string   "codigo"
-    t.string   "denominacao"
-    t.string   "retorno"
-    t.string   "origem"
-    t.boolean  "circular"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
+  create_table "linhas", id: :serial, force: :cascade do |t|
+    t.string "codigo"
+    t.string "denominacao"
+    t.string "retorno"
+    t.string "origem"
+    t.boolean "circular"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "linhas_paradas", id: false, force: :cascade do |t|
-    t.integer "linha_id",  null: false
+    t.integer "linha_id", null: false
     t.integer "parada_id", null: false
   end
 
-  create_table "paradas", force: :cascade do |t|
-    t.string   "codigo"
-    t.string   "denominacao"
-    t.text     "endereco"
-    t.decimal  "lat"
-    t.decimal  "long"
-    t.datetime "created_at",  null: false
-    t.datetime "updated_at",  null: false
-  end
-
-  create_table "reputations", force: :cascade do |t|
-    t.integer  "veiculo_id"
-    t.integer  "parada_id"
+  create_table "paradas", id: :serial, force: :cascade do |t|
+    t.string "codigo"
+    t.string "denominacao"
+    t.text "endereco"
+    t.decimal "lat"
+    t.decimal "long"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parada_id"], name: "index_reputations_on_parada_id", using: :btree
-    t.index ["veiculo_id"], name: "index_reputations_on_veiculo_id", using: :btree
   end
 
-  create_table "snapshots", force: :cascade do |t|
-    t.text     "value"
+  create_table "reputations", id: :serial, force: :cascade do |t|
+    t.integer "veiculo_id"
+    t.integer "parada_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["parada_id"], name: "index_reputations_on_parada_id"
+    t.index ["veiculo_id"], name: "index_reputations_on_veiculo_id"
+  end
+
+  create_table "snapshots", id: :serial, force: :cascade do |t|
+    t.text "value"
     t.datetime "data"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "sugestions", force: :cascade do |t|
-    t.text     "text"
-    t.integer  "user_id"
+  create_table "sugestions", id: :serial, force: :cascade do |t|
+    t.text "text"
+    t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["text"], name: "index_sugestions_on_text", using: :btree
-    t.index ["user_id"], name: "index_sugestions_on_user_id", using: :btree
+    t.index ["text"], name: "index_sugestions_on_text"
+    t.index ["user_id"], name: "index_sugestions_on_user_id"
   end
 
-  create_table "tokens", force: :cascade do |t|
-    t.string   "hash_random"
-    t.integer  "validate_to", default: 10
-    t.integer  "user_id"
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.index ["hash_random"], name: "index_tokens_on_hash_random", using: :btree
-    t.index ["user_id"], name: "index_tokens_on_user_id", using: :btree
+  create_table "tokens", id: :serial, force: :cascade do |t|
+    t.string "hash_random"
+    t.integer "validate_to", default: 10
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["hash_random"], name: "index_tokens_on_hash_random"
+    t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
-  create_table "users", force: :cascade do |t|
-    t.string   "name"
-    t.string   "email"
-    t.string   "url_facebook"
-    t.string   "url_photo"
-    t.text     "id_facebook"
-    t.datetime "created_at",   null: false
-    t.datetime "updated_at",   null: false
+  create_table "users", id: :serial, force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "url_facebook"
+    t.string "url_photo"
+    t.text "id_facebook"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
-  create_table "veiculos", force: :cascade do |t|
-    t.string   "codigo"
+  create_table "veiculos", id: :serial, force: :cascade do |t|
+    t.string "codigo"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

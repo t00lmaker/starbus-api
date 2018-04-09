@@ -1,4 +1,4 @@
-class CreateToken < ActiveRecord::Migration
+class CreateToken < ActiveRecord::Migration[5.0]
   def self.up
     create_table :tokens do |t|
       t.string :hash_random, index: true

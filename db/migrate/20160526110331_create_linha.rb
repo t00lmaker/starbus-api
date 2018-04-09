@@ -1,4 +1,4 @@
-class CreateLinha < ActiveRecord::Migration
+class CreateLinha < ActiveRecord::Migration[5.0][5.0]
   def self.up
     # :codigoLinha, :denominacao, :origem,
     #  :retorno, :circular, :veiculos, :paradas

@@ -131,7 +131,7 @@ module StarBus
 
     resource :paradas do
       
-      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro código.'
+      desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
       params do
         requires :codigo, desc: 'código da linha'
       end

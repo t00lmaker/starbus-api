@@ -1,4 +1,4 @@
-class CreateLinhaParada < ActiveRecord::Migration
+class CreateLinhaParada < ActiveRecord::Migration[5.0]
   def self.up
     create_join_table :linhas, :paradas 
   end

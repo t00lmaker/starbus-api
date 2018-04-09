@@ -1,4 +1,4 @@
-class CreateInteraction < ActiveRecord::Migration
+class CreateInteraction < ActiveRecord::Migration[5.0]
   def self.up
     create_table :interactions do |t|
       t.string :type_

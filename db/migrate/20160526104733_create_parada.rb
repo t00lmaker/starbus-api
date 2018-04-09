@@ -1,5 +1,5 @@
 
-class CreateParada < ActiveRecord::Migration
+class CreateParada < ActiveRecord::Migration[5.0][5.0]
   def self.up
     create_table :paradas do |t|
       t.string :codigo
