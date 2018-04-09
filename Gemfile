@@ -33,6 +33,8 @@ gem 'timerizer'
 
 gem 'sinatra'
 
+gem 'rake'
+
 group :development do
   # Debug code Ruby require 'prbyebugy' and add 'byebug' in code
   # for define breakpoint.
