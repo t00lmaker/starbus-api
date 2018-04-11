@@ -372,25 +372,22 @@ module StarBus
         requires :long, type: Float
         requires :codigos, type: Array
       end
-      get "linha", :rabl => "paradas_veiculos0.rabl" do
+      get 'linha', rabl: 'paradas_veiculos0.rabl' do
         linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
         @veiculos = []
         @paradas = []
-        if(linhas && !linhas.empty? )
+        if linhas && !linhas.empty?
           linhas.each do |linha|
             lon = params[:long]
             lat = params[:lat]
-            paradas = []
             paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, linha.paradas)
-            if(paradas.empty?)
+            if paradas.empty?
               paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), linha.paradas)
             end
-            if(!paradas.empty?)
-              @paradas.concat(paradas)
-            end
+            @paradas.concat(paradas)
             veiculos = BusCache.instance.get_by_line(linha.codigo)
-            if(veiculos && !veiculos.empty?)
-              veiculos.each{|v| v.codigo_linha = linha.codigo }
+            if veiculos && !veiculos.empty?
+              veiculos.each { |v| v.linha.codigo = linha.codigo }
               @veiculos.concat(veiculos)
             end
           end
