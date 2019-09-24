@@ -5,11 +5,11 @@ require 'otr-activerecord'
 require_relative 'starbus-api'
 require_relative 'starbus-web'
 
-#CONFIG_ENV = 'development'
+CONFIG_ENV = 'development'
 
 # Carrega as variaveis de ambiente no arquivo env.yml
 # conforme o ambiente passado no segundo parametro.
-#Envyable.load('./config/env.yml', CONFIG_ENV)
+Envyable.load('./config/env.yml', CONFIG_ENV)
 Envyable.load('./config/env.yml', 'strans')
 
 # Configura o banco de dados,caso não encontre valor para ENV ["DATABASE_URL"] (heroku)

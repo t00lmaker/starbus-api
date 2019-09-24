@@ -15,5 +15,3 @@ test: &test
   pool: 5
   username: toolmaker
   password:
-
-production:

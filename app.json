@@ -1,0 +1,8 @@
+{
+  "name": "Starbus App",
+  "description": "A plataforma de transporte publico de Teresina",
+  "image": "heroku/ruby",
+  "repository": "https://github.com/t00lmaker/starbus-api.git",
+  "keywords": ["ruby", "grape" ],
+  "addons": ["heroku-postgresql"]
+}
