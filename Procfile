@@ -1,1 +1,1 @@
-web: rakup
+web: rackup
