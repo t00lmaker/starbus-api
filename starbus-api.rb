@@ -133,7 +133,7 @@ module StarBus
       
       desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
       params do
-        requires :codigo, desc: 'código da linha'
+	      requires :codigo, desc: 'código da parada.'
       end
       get '/', :rabl => "paradas.rabl"  do
           @paradas = Parada.find_by_codigo(params[:codigo]) ||

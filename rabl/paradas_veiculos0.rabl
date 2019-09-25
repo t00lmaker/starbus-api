@@ -14,5 +14,8 @@ child @paradas, :root => :paradas, :object_root => false do
 end
 
 child @veiculos, :root => :veiculos, :object_root => false do
-  attributes :codigo, :hora, :lat, :long, :last_lat, :last_long, :codigo_linha
+  attributes :codigo, :hora, :lat, :long, :last_lat, :last_long
+  child :linha  => :linha do
+    attributes :codigo, :denominacao, :retorno, :origem, :circular
+  end
 end
