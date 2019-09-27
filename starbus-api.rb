@@ -97,12 +97,10 @@ module StarBus
           split = busca.split
           @linhas = Set.new
           split.each do |termo|
-            if(termo.size > 2)
               puts "> #{ termo }"
               @linhas = @linhas + Linha
                           .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
                           .order("codigo asc")
-            end
           end
         else
           @linhas = Linha.order(:codigo)
