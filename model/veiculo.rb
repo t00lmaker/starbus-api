@@ -4,7 +4,7 @@ require_relative 'linha'
 class Veiculo < ActiveRecord::Base
   has_one :reputation
 
-  attr_accessor :codigo, :hora, :lat, :long, :last_lat, :last_long, :linha
+  attr_accessor :hora, :lat, :long, :last_lat, :last_long, :linha
 
   # faz o merge entre dois veiculos.
   def merge(veiculo_strans)

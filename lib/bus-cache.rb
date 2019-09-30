@@ -91,13 +91,11 @@ class BusCache
   def load_or_save(veiculo_strans)
     codigo = veiculo_strans.codigoVeiculo
     veiculo = Veiculo.find_by_codigo(codigo)
-    unless veiculo
-      veiculo = Veiculo.new(codigo: codigo)
-      veiculo.reputation = Reputation.new
+    unless veiculo 
+      veiculo = Veiculo.create(codigo: codigo, reputation: Reputation.new)
     end
     veiculo.merge(veiculo_strans)
     load_last_position(veiculo)
-    veiculo.save unless veiculo.persisted?
     veiculo
   end
 
