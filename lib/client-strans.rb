@@ -18,7 +18,7 @@ class StransAPi
   # Chamdadas aos servicos padroes da API
   def get(path, busca=nil)
     begin
-      return @client.get(path, busca)
+     # return @client.get(path, busca)
     rescue
       return nil
     end
