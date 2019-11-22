@@ -10,7 +10,9 @@ class StransAPi
   include Singleton
 
   def initialize
-    @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
+    @client = StransClient.new(ENV['STRANS_MAIL'],
+			       ENV['STRANS_PASS'],
+			       ENV['STRANS_KEY'])
   end
 
   # Chamdadas aos servicos padroes da API
