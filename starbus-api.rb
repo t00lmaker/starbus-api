@@ -34,367 +34,361 @@ module StarBus
         User.all.first
       end
     end
+    
+    # resource :user do
+    #   params do
+    #     requires :user, desc: 'Código identificador do facebook do usuário.'
+    #     requires :hash, desc: 'hash de autenticação facebook.'
+    #     optional :name, desc: 'Nome do usuario.'
+    #     optional :email, desc: 'E-mail do usuario.'
+    #     optional :url_photo, desc: 'E-mail do usuario.'
+    #     optional :url_face, desc: 'Nome do usuario.'
+    #   end
+    #   post :login do
+    #     hash = FaceControl.instance.auth(params)
+    #     { "hash" => hash}
+    #   end
 
-    resource :test do
-      get '/' do
-        { nome: 'John' }.to_json
-      end
-    end
-
-    resource :user do
-      params do
-        requires :user, desc: 'Código identificador do facebook do usuário.'
-        requires :hash, desc: 'hash de autenticação facebook.'
-        optional :name, desc: 'Nome do usuario.'
-        optional :email, desc: 'E-mail do usuario.'
-        optional :url_photo, desc: 'E-mail do usuario.'
-        optional :url_face, desc: 'Nome do usuario.'
-      end
-      post :login do
-        hash = FaceControl.instance.auth(params)
-        { "hash" => hash}
-      end
-
-      params do
-        optional :user, desc: 'Código identificador do facebook do usuário.'
-        optional :email, desc: 'E-mail do usuario.'
-        requires :text, desc: 'Texto da susgestão'
-      end
-      post :sugestion do
-        if(params[:user])
-          @user = User.find_by_id_facebook(params[:hash]) if params[:user]
-        elsif(params[:email])
-          @user = User.find_by_email(params[:email])
-          @user = User.create(email: params[:email]) unless @user
-        end
-        Sugestion.create(user: @user, text: params[:text]) != nil
-      end
-    end
+    #   params do
+    #     optional :user, desc: 'Código identificador do facebook do usuário.'
+    #     optional :email, desc: 'E-mail do usuario.'
+    #     requires :text, desc: 'Texto da susgestão'
+    #   end
+    #   post :sugestion do
+    #     if(params[:user])
+    #       @user = User.find_by_id_facebook(params[:hash]) if params[:user]
+    #     elsif(params[:email])
+    #       @user = User.find_by_email(params[:email])
+    #       @user = User.create(email: params[:email]) unless @user
+    #     end
+    #     Sugestion.create(user: @user, text: params[:text]) != nil
+    #   end
+    # end
 
     resource :linhas do
-      params do
-        requires :codigos, type: Array, desc: 'códigos da linhas que deseja'
-      end
-      get '/get', :rabl => "linhas.rabl" do
-        @linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
-        if !@linhas
-          error!({ erro: 'Linha não encontrada.', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
-        end
-        @linhas
-      end
+      # params do
+      #   requires :codigos, type: Array, desc: 'códigos da linhas que deseja'
+      # end
+      # get '/get', :rabl => "linhas.rabl" do
+      #   @linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
+      #   if !@linhas
+      #     error!({ erro: 'Linha não encontrada.', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+      #   end
+      #   @linhas
+      # end
 
-      params do
-        optional :busca, desc: 'termo para busca da linha.'
-      end
-      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro busca.'
-      get '/', :rabl => "linhas.rabl" do
-        busca = params[:busca]
-        if(busca)
-          puts busca
-          sql = "codigo like ? OR denominacao like ? OR retorno like ?"
-          busca = ActiveSupport::Inflector.transliterate(busca)
-          busca = busca.upcase
-          split = busca.split
-          @linhas = Set.new
-          split.each do |termo|
-              puts "> #{ termo }"
-              @linhas = @linhas + Linha
-                          .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
-                          .order("codigo asc")
-          end
-        else
-          @linhas = Linha.order(:codigo)
-        end
-      end
+      # params do
+      #   optional :busca, desc: 'termo para busca da linha.'
+      # end
+      # desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro busca.'
+      # get '/', :rabl => "linhas.rabl" do
+      #   busca = params[:busca]
+      #   if(busca)
+      #     puts busca
+      #     sql = "codigo like ? OR denominacao like ? OR retorno like ?"
+      #     busca = ActiveSupport::Inflector.transliterate(busca)
+      #     busca = busca.upcase
+      #     split = busca.split
+      #     @linhas = Set.new
+      #     split.each do |termo|
+      #         puts "> #{ termo }"
+      #         @linhas = @linhas + Linha
+      #                     .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
+      #                     .order("codigo asc")
+      #     end
+      #   else
+      #     @linhas = Linha.order(:codigo)
+      #   end
+      # end
 
       desc 'Recarrega todas as Linhas e salva com base na API Integrah.'
       get :load do
         LoadLinhasParadas.new.init
       end
 
-      desc 'Pega as linhas da para com o código passado.'
-      params do
-        requires :codigo, desc: 'código da parada que deseja as linhas.'
-      end
-      get 'parada/:codigo', :rabl => "linhas.rabl" do
-        parada = Parada.find_by_codigo(params[:codigo])
-        if parada
-          @linhas = parada.linhas.order('codigo ASC')
-        else
-          error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
-        end
-      end
+      # desc 'Pega as linhas da para com o código passado.'
+      # params do
+      #   requires :codigo, desc: 'código da parada que deseja as linhas.'
+      # end
+      # get 'parada/:codigo', :rabl => "linhas.rabl" do
+      #   parada = Parada.find_by_codigo(params[:codigo])
+      #   if parada
+      #     @linhas = parada.linhas.order('codigo ASC')
+      #   else
+      #     error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+      #   end
+      # end
 
     end #resource :linha
 
-    resource :paradas do
+  #   resource :paradas do
       
-      desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
-      params do
-	      requires :codigo, desc: 'código da parada.'
-      end
-      get '/', :rabl => "paradas.rabl"  do
-          @paradas = Parada.find_by_codigo(params[:codigo]) ||
-          error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
-      end
+  #     desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
+  #     params do
+	#       requires :codigo, desc: 'código da parada.'
+  #     end
+  #     get '/', :rabl => "paradas.rabl"  do
+  #         @paradas = Parada.find_by_codigo(params[:codigo]) ||
+  #         error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+  #     end
 
-      get :all, :rabl => "paradas_basic.rabl" do
-        @paradas = Parada.includes(:linhas)
-      end
+  #     get :all, :rabl => "paradas_basic.rabl" do
+  #       @paradas = Parada.includes(:linhas)
+  #     end
 
-      params do
-        requires :codigo, desc: 'código da parada que será feito o checkin.'
-      end
-      post :checkin do
-        check_in = Checkin.new
-        check_in.user = current_user
-        check_in.parada = Parada.find_by_codigo(params[:codigo])
-        check_in.save!
-      end
+  #     params do
+  #       requires :codigo, desc: 'código da parada que será feito o checkin.'
+  #     end
+  #     post :checkin do
+  #       check_in = Checkin.new
+  #       check_in.user = current_user
+  #       check_in.parada = Parada.find_by_codigo(params[:codigo])
+  #       check_in.save!
+  #     end
 
-      params do
-        requires :lat, type:  Float
-        requires :long, type: Float
-        requires :dist, type: Float
-      end
-      get :proximas, :rabl => "paradas.rabl" do
-        @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
-        if(!@paradas || @paradas.empty?)
-          @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
-        end
-      end
+  #     params do
+  #       requires :lat, type:  Float
+  #       requires :long, type: Float
+  #       requires :dist, type: Float
+  #     end
+  #     get :proximas, :rabl => "paradas.rabl" do
+  #       @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
+  #       if(!@paradas || @paradas.empty?)
+  #         @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
+  #       end
+  #     end
 
-    end
+  #   end
 
-    resource :veiculos do
+  #   resource :veiculos do
 
-      get :agora, :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.all
-      end
+  #     get :agora, :rabl => "veiculos.rabl" do
+  #       @veiculos = BusCache.instance.all
+  #     end
 
-      get "agora/count" do
-        { count: BusCache.instance.all.size }
-      end
+  #     get "agora/count" do
+  #       { count: BusCache.instance.all.size }
+  #     end
 
-      get :load do
-        LoadVeiculos.new.init
-      end
+  #     get :load do
+  #       LoadVeiculos.new.init
+  #     end
 
-      params do
-        requires :codigo, desc: 'código do veciculo.'
-      end
-      get "/:codigo", :rabl => "veiculo.rabl" do
-        @veiculo = BusCache.instance.get(params[:codigo])
-        if(!@veiculo)
-          error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
-        end
-      end
+  #     params do
+  #       requires :codigo, desc: 'código do veciculo.'
+  #     end
+  #     get "/:codigo", :rabl => "veiculo.rabl" do
+  #       @veiculo = BusCache.instance.get(params[:codigo])
+  #       if(!@veiculo)
+  #         error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
+  #       end
+  #     end
 
-      params do
-        requires :codigo, desc: 'código da linha que deseja os veículos.'
-      end
-      get "linha/:codigo", :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.get_by_line(params[:codigo])
-      end
+  #     params do
+  #       requires :codigo, desc: 'código da linha que deseja os veículos.'
+  #     end
+  #     get "linha/:codigo", :rabl => "veiculos.rabl" do
+  #       @veiculos = BusCache.instance.get_by_line(params[:codigo])
+  #     end
 
-      params do
-        requires :codigo, desc: 'código do veículo que será feito o checkin.'
-      end
-      post :checkin do
-        veiculo = BusCache.instance.get(params[:codigo])
-        if(veiculo)
-          check_in = Checkin.new
-          check_in.user = current_user
-          check_in.veiculo = veiculo
-          return check_in.save!
-        end
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Não podemos fazer login em um veiculo que não se encontra rodando.' }, 404)
-      end
+  #     params do
+  #       requires :codigo, desc: 'código do veículo que será feito o checkin.'
+  #     end
+  #     post :checkin do
+  #       veiculo = BusCache.instance.get(params[:codigo])
+  #       if(veiculo)
+  #         check_in = Checkin.new
+  #         check_in.user = current_user
+  #         check_in.veiculo = veiculo
+  #         return check_in.save!
+  #       end
+  #       error!({ erro: 'Veiculo não encontrado', detalhe: 'Não podemos fazer login em um veiculo que não se encontra rodando.' }, 404)
+  #     end
 
-    end
+  #   end
 
-    params do
-      requires :type, values: ['con','seg','mov','pon','ace','est']
-      requires :codigo
-    end
-    resource :interaction do
-      get ':type/parada/:codigo', :rabl => "interactions.rabl" do
-        @type = Interaction.type_s[params[:type]]
-        parada = Parada.find_by_codigo(params[:codigo])
-        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
-        @reputation = parada.reputation
-        @interactions = @reputation.interactions_type(@type)
-      end
-      get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
-        codigo = params[:codigo]
-        @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(codigo)
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        @reputation = veiculo.reputation
-        @interactions = @reputation.interactions_type(@type)
-      end
+  #   params do
+  #     requires :type, values: ['con','seg','mov','pon','ace','est']
+  #     requires :codigo
+  #   end
+  #   resource :interaction do
+  #     get ':type/parada/:codigo', :rabl => "interactions.rabl" do
+  #       @type = Interaction.type_s[params[:type]]
+  #       parada = Parada.find_by_codigo(params[:codigo])
+  #       error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
+  #       @reputation = parada.reputation
+  #       @interactions = @reputation.interactions_type(@type)
+  #     end
+  #     get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
+  #       codigo = params[:codigo]
+  #       @type = Interaction.type_s[params[:type]]
+  #       veiculo = Veiculo.find_by_codigo(codigo)
+  #       error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
+  #       @reputation = veiculo.reputation
+  #       @interactions = @reputation.interactions_type(@type)
+  #     end
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-        requires :id_facebook
-      end
-      post ':type/parada/:codigo',:rabl => "result.rabl" do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        @result = Result.new
-        parada = Parada.find_by_codigo(params[:codigo])
-        if(parada)
-          parada.reputation ||= Reputation.new
-          parada.reputation.interactions << i
-          @result.status = parada.save! ? "sucess" : "error"
-        else
-          @result.status = "error"
-          @result.mensage = "Parada não encontrada."
-        end
-      end
+  #     params do
+  #       requires :evaluation, values: Interaction.evaluations.values
+  #       requires :comment
+  #       requires :id_facebook
+  #     end
+  #     post ':type/parada/:codigo',:rabl => "result.rabl" do
+  #       i = Interaction.new
+  #       i.user = User.find_by_id_facebook(params[:id_facebook])
+  #       i.type_ = params[:type]
+  #       i.comment = params[:comment]
+  #       i.evaluation = params[:evaluation]
+  #       @result = Result.new
+  #       parada = Parada.find_by_codigo(params[:codigo])
+  #       if(parada)
+  #         parada.reputation ||= Reputation.new
+  #         parada.reputation.interactions << i
+  #         @result.status = parada.save! ? "sucess" : "error"
+  #       else
+  #         @result.status = "error"
+  #         @result.mensage = "Parada não encontrada."
+  #       end
+  #     end
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-        requires :id_facebook
-      end
-      post ':type/veiculo/:codigo', :rabl => "result.rabl" do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        @result = Result.new
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        if(veiculo)
-          veiculo.reputation ||= Reputation.new
-          veiculo.reputation.interactions << i
-          @result.status = veiculo.save! ? "sucess" : "error"
-        else
-          @result.mensage = "Veiculo não encontrado."
-        end
-       end
-    end
+  #     params do
+  #       requires :evaluation, values: Interaction.evaluations.values
+  #       requires :comment
+  #       requires :id_facebook
+  #     end
+  #     post ':type/veiculo/:codigo', :rabl => "result.rabl" do
+  #       i = Interaction.new
+  #       i.user = User.find_by_id_facebook(params[:id_facebook])
+  #       i.type_ = params[:type]
+  #       i.comment = params[:comment]
+  #       i.evaluation = params[:evaluation]
+  #       @result = Result.new
+  #       veiculo = Veiculo.find_by_codigo(params[:codigo])
+  #       if(veiculo)
+  #         veiculo.reputation ||= Reputation.new
+  #         veiculo.reputation.interactions << i
+  #         @result.status = veiculo.save! ? "sucess" : "error"
+  #       else
+  #         @result.mensage = "Veiculo não encontrado."
+  #       end
+  #      end
+  #   end
 
-    # limite de interacitions por tela.
-    #LIMIT = 10
-    params do
-      requires :type, values: ['con','seg','mov','pon','ace','est']
-      requires :codigo
-    end
-    resource :interactions do
+  #   # limite de interacitions por tela.
+  #   #LIMIT = 10
+  #   params do
+  #     requires :type, values: ['con','seg','mov','pon','ace','est']
+  #     requires :codigo
+  #   end
+  #   resource :interactions do
 
-      get ':type/parada/:codigo', :rabl => "interactions.rabl" do
-        @type = Interaction.type_s[params[:type]]
-        parada = Parada.find_by_codigo(params[:codigo])
-        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
-        @reputation = parada.reputation
-        @interactions = @reputation.interactions_type(@type)
-      end
+  #     get ':type/parada/:codigo', :rabl => "interactions.rabl" do
+  #       @type = Interaction.type_s[params[:type]]
+  #       parada = Parada.find_by_codigo(params[:codigo])
+  #       error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
+  #       @reputation = parada.reputation
+  #       @interactions = @reputation.interactions_type(@type)
+  #     end
 
-      get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
-        codigo = params[:codigo]
-        @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(codigo)
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        @reputation = veiculo.reputation
-        @interactions = @reputation.interactions_type(@type)
-      end
+  #     get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
+  #       codigo = params[:codigo]
+  #       @type = Interaction.type_s[params[:type]]
+  #       veiculo = Veiculo.find_by_codigo(codigo)
+  #       error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
+  #       @reputation = veiculo.reputation
+  #       @interactions = @reputation.interactions_type(@type)
+  #     end
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-        requires :id_facebook
-      end
-      post ':type/parada/:codigo' do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        parada = Parada.find_by_codigo(params[:codigo])
-        parada.reputation ||= Reputation.new
-        parada.reputation.interactions << i
-        parada.save!
-      end
+  #     params do
+  #       requires :evaluation, values: Interaction.evaluations.values
+  #       requires :comment
+  #       requires :id_facebook
+  #     end
+  #     post ':type/parada/:codigo' do
+  #       i = Interaction.new
+  #       i.user = User.find_by_id_facebook(params[:id_facebook])
+  #       i.type_ = params[:type]
+  #       i.comment = params[:comment]
+  #       i.evaluation = params[:evaluation]
+  #       parada = Parada.find_by_codigo(params[:codigo])
+  #       parada.reputation ||= Reputation.new
+  #       parada.reputation.interactions << i
+  #       parada.save!
+  #     end
 
-      params do
-        requires :evaluation, values: Interaction.evaluations.values
-        requires :comment
-      end
-      post ':type/veiculo/:codigo' do
-        i = Interaction.new
-        i.user = User.find_by_id_facebook(params[:id_facebook])
-        i.type_ = params[:type]
-        i.comment = params[:comment]
-        i.evaluation = params[:evaluation]
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        veiculo.reputation ||= Reputation.new
-        veiculo.reputation.interactions << i
-        veiculo.save!
-      end
-   end
+  #     params do
+  #       requires :evaluation, values: Interaction.evaluations.values
+  #       requires :comment
+  #     end
+  #     post ':type/veiculo/:codigo' do
+  #       i = Interaction.new
+  #       i.user = User.find_by_id_facebook(params[:id_facebook])
+  #       i.type_ = params[:type]
+  #       i.comment = params[:comment]
+  #       i.evaluation = params[:evaluation]
+  #       veiculo = Veiculo.find_by_codigo(params[:codigo])
+  #       error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
+  #       veiculo.reputation ||= Reputation.new
+  #       veiculo.reputation.interactions << i
+  #       veiculo.save!
+  #     end
+  #  end
 
-    RAIO_BUSCA_APP = 500
+  #   RAIO_BUSCA_APP = 500
 
 
-    resource :paradasveiculos do
-      params do
-        requires :lat, type:  Float
-        requires :long, type: Float
-        requires :codigo
-      end
-      get "linha/:codigo", :rabl => "paradas_veiculos.rabl" do
-        @linha = Linha.find_by_codigo(params[:codigo])
-        if(@linha)
-          lon = params[:long]
-          lat = params[:lat]
-          @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
-          if(!@paradas || @paradas.empty?)
-            @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
-          end
-          @veiculos = BusCache.instance.get_by_line(params[:codigo])
-          @veiculos.each{|v| v.linha = @linha.codigo } if @veiculos
-          return
-        end
-        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
-      end
+  #   resource :paradasveiculos do
+  #     params do
+  #       requires :lat, type:  Float
+  #       requires :long, type: Float
+  #       requires :codigo
+  #     end
+  #     get "linha/:codigo", :rabl => "paradas_veiculos.rabl" do
+  #       @linha = Linha.find_by_codigo(params[:codigo])
+  #       if(@linha)
+  #         lon = params[:long]
+  #         lat = params[:lat]
+  #         @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
+  #         if(!@paradas || @paradas.empty?)
+  #           @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
+  #         end
+  #         @veiculos = BusCache.instance.get_by_line(params[:codigo])
+  #         @veiculos.each{|v| v.linha = @linha.codigo } if @veiculos
+  #         return
+  #       end
+  #       error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
+  #     end
 
-      params do
-        requires :lat, type:  Float
-        requires :long, type: Float
-        requires :codigos, type: Array
-      end
-      get 'linha', rabl: 'paradas_veiculos0.rabl' do
-        linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
-        @veiculos = []
-        @paradas = []
-        if linhas && !linhas.empty?
-          linhas.each do |linha|
-            lon = params[:long]
-            lat = params[:lat]
-            paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, linha.paradas)
-            if paradas.empty?
-              paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), linha.paradas)
-            end
-            @paradas.concat(paradas)
-            veiculos = BusCache.instance.get_by_line(linha.codigo)
-            if veiculos && !veiculos.empty?
-              veiculos.each { |v| v.linha.codigo = linha.codigo }
-              @veiculos.concat(veiculos)
-            end
-          end
-          @paradas = Set.new(@paradas)
-          @veiculos = Set.new(@veiculos)
-          return
-        end
-        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o(s) codigo(s) da(s) linha(s) passado por parametro.' }, 404)
-      end
-    end
+  #     params do
+  #       requires :lat, type:  Float
+  #       requires :long, type: Float
+  #       requires :codigos, type: Array
+  #     end
+  #     get 'linha', rabl: 'paradas_veiculos0.rabl' do
+  #       linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
+  #       @veiculos = []
+  #       @paradas = []
+  #       if linhas && !linhas.empty?
+  #         linhas.each do |linha|
+  #           lon = params[:long]
+  #           lat = params[:lat]
+  #           paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, linha.paradas)
+  #           if paradas.empty?
+  #             paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), linha.paradas)
+  #           end
+  #           @paradas.concat(paradas)
+  #           veiculos = BusCache.instance.get_by_line(linha.codigo)
+  #           if veiculos && !veiculos.empty?
+  #             veiculos.each { |v| v.linha.codigo = linha.codigo }
+  #             @veiculos.concat(veiculos)
+  #           end
+  #         end
+  #         @paradas = Set.new(@paradas)
+  #         @veiculos = Set.new(@veiculos)
+  #         return
+  #       end
+  #       error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o(s) codigo(s) da(s) linha(s) passado por parametro.' }, 404)
+  #     end
+  #   end
   end #class
 end #module
