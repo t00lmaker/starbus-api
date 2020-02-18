@@ -6,7 +6,7 @@ class LoadLinhasParadas
 
   def init
     @paradas = {}
-    @strans = StransClient.new(ENV['EMAIL'],ENV['PASSWORD'],ENV['KEY'])
+    @strans = StransClient.new(ENV['STRANS_MAIL'], ENV['STRANS_PASS'],ENV['STRANS_KEY'])
     linhas = @strans.get(:linhas)
     if(linhas.is_a?(ErroStrans))
       raise RuntimeError, "Strans Api error '#{linhas.to_json}'"
