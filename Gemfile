@@ -4,9 +4,6 @@ source "https://rubygems.org"
 # A simple DSL to easily develop RESTful APIs.
 gem 'grape'
 
-# A framework MOR Ruby (The Best)
-#gem 'activerecord'
-
 # Adapter Postgres Ruby
 gem 'pg'
 
@@ -34,6 +31,10 @@ gem 'timerizer'
 gem 'sinatra'
 
 gem 'rake'
+
+# Gem para autenticação com jwt.
+# https://github.com/jwt/ruby-jwt
+gem 'jwt'
 
 group :development do
   # Debug code Ruby require 'prbyebugy' and add 'byebug' in code
