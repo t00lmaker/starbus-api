@@ -2,6 +2,8 @@ class CreateUser < ActiveRecord::Migration[5.0]
   def self.up
     create_table :users do |t|
       t.string :name
+      t.string :username
+      t.string :hash_pass
       t.string :email
       t.string :url_facebook
       t.string :url_photo
