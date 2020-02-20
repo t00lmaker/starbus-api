@@ -11,9 +11,9 @@ require './model/sugestion'
 require './model/result'
 require './lib/load_linhas_paradas'
 require './lib/load_veiculos'
-require './lib/client-strans'
-require './lib/bus-cache'
-require './lib/face-control'
+require './lib/client_strans'
+require './lib/bus_cache'
+require './lib/face_control'
 require 'grape-rabl'
 
 I18n.config.available_locales = :en
@@ -44,9 +44,16 @@ module StarBus
         optional :url_photo, desc: 'E-mail do usuario.'
         optional :url_face, desc: 'Nome do usuario.'
       end
-      post :login do
+      post :login_face do
         hash = FaceControl.instance.auth(params)
         { "hash" => hash}
+      end
+      params do
+        require :username, desc: 'username/email para login.'
+        require :password, desc: 'password para login.'
+      end
+      post :login do
+        
       end
 
       params do
