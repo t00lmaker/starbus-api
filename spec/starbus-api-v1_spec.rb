@@ -7,18 +7,18 @@ end
 describe 'Starbus API v1' do
   before { StarBus::API.before { env["api.tilt.root"] = "rabl" } }
 
-  describe :linhas do
+  describe :lines do
     before do
-      allow(Linha).to receive(:where) { Linha }
-      allow(Linha).to receive(:order) { [] }
+      allow(Line).to receive(:where) { Line }
+      allow(Line).to receive(:order) { [] }
     end
 
     it "GET / no params" do
-      get 'v1/linhas'
+      get 'v1/lines'
       puts ">>>>>> #{last_response.body} <<<<<"
     end
     it "GET / no params" do
-      get 'v1/linhas?busca=505'
+      get 'v1/lines?search=505'
       puts ">>>>>> #{last_response.body} <<<<<"
     end
   end

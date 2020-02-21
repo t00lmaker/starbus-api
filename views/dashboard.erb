@@ -22,15 +22,15 @@
 
           var horarios = Object.keys(json);
           var qnt_buses = [];
-          var linhas, horario, total;
+          var lines, horario, total;
 
           for (i = 0 ; i < horarios.length ; i++){
             horario = horarios[i]
-            linhas_map = json[horario];
-            linhas_keys = Object.keys(json[horario]);
-            for (j = 0 ; j < linhas_keys.length ; j++){
+            lines_map = json[horario];
+            lines_keys = Object.keys(json[horario]);
+            for (j = 0 ; j < lines_keys.length ; j++){
               if( !qnt_buses[horario]){qnt_buses[horario] = 0;}
-              qnt_buses[horario] = qnt_buses[horario] +  linhas_map[linhas_keys[j]].length;
+              qnt_buses[horario] = qnt_buses[horario] +  lines_map[lines_keys[j]].length;
             }
           }
           console.log(qnt_buses);

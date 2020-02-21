@@ -1,19 +1,19 @@
 require 'strans-client'
-require './model/linha'
-require './model/veiculo'
+require './model/line'
+require './model/vehicle'
 
 
-class LoadVeiculos
+class LoadVehicles
 
   def init()
-    veiculos = StransAPi.instance.get(:veiculos)
-    veiculos.each{|v| transform_veiculos(v).save! }
+    vehicles = StransAPi.instance.get(:vehicles)
+    vehicles.each{|v| transform_vehicles(v).save! }
   end
 
-  def transform_veiculos(veiculo_strans)
-    veiculo = Veiculo.new(codigo: veiculo_strans.codigo)
-    veiculo.reputation = Reputation.new
-    veiculo
+  def transform_vehicles(vehicle_strans)
+    vehicle = Vehicle.new(code: vehicle_strans.code)
+    vehicle.reputation = Reputation.new
+    vehicle
   end
 
 end

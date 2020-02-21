@@ -28,13 +28,13 @@ ActiveRecord::Schema.define(version: 2020_02_20_015935) do
   create_table "checkins", id: :serial, force: :cascade do |t|
     t.integer "validate_to", default: 10
     t.integer "user_id"
-    t.integer "parada_id"
-    t.integer "veiculo_id"
+    t.integer "stop_id"
+    t.integer "vehicle_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parada_id"], name: "index_checkins_on_parada_id"
+    t.index ["stop_id"], name: "index_checkins_on_stop_id"
     t.index ["user_id"], name: "index_checkins_on_user_id"
-    t.index ["veiculo_id"], name: "index_checkins_on_veiculo_id"
+    t.index ["vehicle_id"], name: "index_checkins_on_vehicle_id"
   end
 
   create_table "interactions", id: :serial, force: :cascade do |t|
@@ -49,8 +49,8 @@ ActiveRecord::Schema.define(version: 2020_02_20_015935) do
     t.index ["user_id"], name: "index_interactions_on_user_id"
   end
 
-  create_table "linhas", id: :serial, force: :cascade do |t|
-    t.string "codigo"
+  create_table "lines", id: :serial, force: :cascade do |t|
+    t.string "code"
     t.string "denominacao"
     t.string "retorno"
     t.string "origem"
@@ -59,13 +59,13 @@ ActiveRecord::Schema.define(version: 2020_02_20_015935) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "linhas_paradas", id: false, force: :cascade do |t|
-    t.integer "linha_id", null: false
-    t.integer "parada_id", null: false
+  create_table "lines_stops", id: false, force: :cascade do |t|
+    t.integer "line_id", null: false
+    t.integer "stop_id", null: false
   end
 
-  create_table "paradas", id: :serial, force: :cascade do |t|
-    t.string "codigo"
+  create_table "stops", id: :serial, force: :cascade do |t|
+    t.string "code"
     t.string "denominacao"
     t.text "endereco"
     t.decimal "lat"
@@ -75,12 +75,12 @@ ActiveRecord::Schema.define(version: 2020_02_20_015935) do
   end
 
   create_table "reputations", id: :serial, force: :cascade do |t|
-    t.integer "veiculo_id"
-    t.integer "parada_id"
+    t.integer "vehicle_id"
+    t.integer "stop_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["parada_id"], name: "index_reputations_on_parada_id"
-    t.index ["veiculo_id"], name: "index_reputations_on_veiculo_id"
+    t.index ["stop_id"], name: "index_reputations_on_stop_id"
+    t.index ["vehicle_id"], name: "index_reputations_on_vehicle_id"
   end
 
   create_table "snapshots", id: :serial, force: :cascade do |t|
@@ -121,8 +121,8 @@ ActiveRecord::Schema.define(version: 2020_02_20_015935) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "veiculos", id: :serial, force: :cascade do |t|
-    t.string "codigo"
+  create_table "vehicles", id: :serial, force: :cascade do |t|
+    t.string "code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

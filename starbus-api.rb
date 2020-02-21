@@ -1,7 +1,7 @@
 require 'grape'
-require './model/linha'
-require './model/parada'
-require './model/veiculo'
+require './model/line'
+require './model/stop'
+require './model/vehicle'
 require './model/reputation'
 require './model/interaction'
 require './model/checkin'
@@ -9,8 +9,8 @@ require './model/token'
 require './model/user'
 require './model/sugestion'
 require './model/result'
-require './lib/load_linhas_paradas'
-require './lib/load_veiculos'
+require './lib/load_lines_stops'
+require './lib/load_vehicles'
 require './lib/client_strans'
 require './lib/bus_cache'
 require './lib/face_control'
@@ -106,84 +106,84 @@ module StarBus
       end
     end
 
-    resource :linhas do
+    resource :lines do
       params do
-        requires :codigos, type: Array, desc: 'códigos da linhas que deseja'
+        requires :codes, type: Array, desc: 'códigos da lines que deseja'
       end
-      get '/get', :rabl => "linhas.rabl" do
-        @linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
-        if !@linhas
-          error!({ erro: 'Linha não encontrada.', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+      get '/get', :rabl => "lines.rabl" do
+        @lines = Line.where(code: params[:codes]).order('code ASC')
+        if !@lines
+          error!({ erro: 'Line não encontrada.', detalhe: 'Verifique o code passado por parametro.' }, 404)
         end
-        @linhas
+        @lines
       end
 
       params do
-        optional :busca, desc: 'termo para busca da linha.'
+        optional :search, desc: 'termo para search da line.'
       end
-      desc 'Retornas as linhas registradas, filtradas ou não pelo parâmetro busca.'
-      get '/', :rabl => "linhas.rabl" do
-        busca = params[:busca]
-        if(busca)
-          puts busca
-          sql = "codigo like ? OR denominacao like ? OR retorno like ?"
-          busca = ActiveSupport::Inflector.transliterate(busca)
-          busca = busca.upcase
-          split = busca.split
-          @linhas = Set.new
+      desc 'Retornas as lines registradas, filtradas ou não pelo parâmetro search.'
+      get '/', :rabl => "lines.rabl" do
+        search = params[:search]
+        if(search)
+          puts search
+          sql = "code like ? OR denominacao like ? OR retorno like ?"
+          search = ActiveSupport::Inflector.transliterate(search)
+          search = search.upcase
+          split = search.split
+          @lines = Set.new
           split.each do |termo|
               puts "> #{ termo }"
-              @linhas = @linhas + Linha
+              @lines = @lines + Line
                           .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
-                          .order("codigo asc")
+                          .order("code asc")
           end
         else
-          @linhas = Linha.order(:codigo)
+          @lines = Line.order(:code)
         end
       end
 
-      desc 'Recarrega todas as Linhas e salva com base na API Integrah.'
+      desc 'Recarrega todas as Lines e salva com base na API Integrah.'
       get :load do
-        LoadLinhasParadas.new.init
+        LoadLinesStops.new.init
       end
 
-      desc 'Pega as linhas da para com o código passado.'
+      desc 'Pega as lines da para com o código passado.'
       params do
-        requires :codigo, desc: 'código da parada que deseja as linhas.'
+        requires :code, desc: 'código da stop que deseja as lines.'
       end
-      get 'parada/:codigo', :rabl => "linhas.rabl" do
-        parada = Parada.find_by_codigo(params[:codigo])
-        if parada
-          @linhas = parada.linhas.order('codigo ASC')
+      get 'stop/:code', :rabl => "lines.rabl" do
+        stop = Stop.find_by_code(params[:code])
+        if stop
+          @lines = stop.lines.order('code ASC')
         else
-          error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+          error!({ erro: 'Stop nao registrada', detalhe: 'Verifique o code passado por parametro.' }, 404)
         end
       end
 
-    end #resource :linha
+    end #resource :line
 
-    resource :paradas do
+    resource :stops do
       
-      desc 'Retornas as paradas registradas, filtradas ou não pelo parâmetro código.'
+      desc 'Retornas as stops registradas, filtradas ou não pelo parâmetro código.'
       params do
-	      requires :codigo, desc: 'código da parada.'
+	      requires :code, desc: 'código da stop.'
       end
-      get '/', :rabl => "paradas.rabl"  do
-          @paradas = Parada.find_by_codigo(params[:codigo]) ||
-          error!({ erro: 'Parada nao registrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404)
+      get '/', :rabl => "stops.rabl"  do
+          @stops = Stop.find_by_code(params[:code]) ||
+          error!({ erro: 'Stop nao registrada', detalhe: 'Verifique o code passado por parametro.' }, 404)
       end
 
-      get :all, :rabl => "paradas_basic.rabl" do
-        @paradas = Parada.includes(:linhas)
+      get :all, :rabl => "stops_basic.rabl" do
+        @stops = Stop.includes(:lines)
       end
 
       params do
-        requires :codigo, desc: 'código da parada que será feito o checkin.'
+        requires :code, desc: 'código da stop que será feito o checkin.'
       end
       post :checkin do
         check_in = Checkin.new
         check_in.user = current_user
-        check_in.parada = Parada.find_by_codigo(params[:codigo])
+        check_in.stop = Stop.find_by_code(params[:code])
         check_in.save!
       end
 
@@ -192,19 +192,19 @@ module StarBus
         requires :long, type: Float
         requires :dist, type: Float
       end
-      get :proximas, :rabl => "paradas.rabl" do
-        @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], params[:dist])
-        if(!@paradas || @paradas.empty?)
-          @paradas = StransAPi.instance.paradas_proximas(params[:long], params[:lat], (params[:dist] * 2))
+      get :proximas, :rabl => "stops.rabl" do
+        @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], params[:dist])
+        if(!@stops || @stops.empty?)
+          @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], (params[:dist] * 2))
         end
       end
 
     end
 
-    resource :veiculos do
+    resource :vehicles do
 
-      get :agora, :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.all
+      get :agora, :rabl => "vehicles.rabl" do
+        @vehicles = BusCache.instance.all
       end
 
       get "agora/count" do
@@ -212,60 +212,60 @@ module StarBus
       end
 
       get :load do
-        LoadVeiculos.new.init
+        LoadVehicles.new.init
       end
 
       params do
-        requires :codigo, desc: 'código do veciculo.'
+        requires :code, desc: 'código do veciculo.'
       end
-      get "/:codigo", :rabl => "veiculo.rabl" do
-        @veiculo = BusCache.instance.get(params[:codigo])
-        if(!@veiculo)
-          error!({ erro: 'Veiculo não encontrado', detalhe: 'Apenas veiculos rodando encontram-se disponiveis aqui.' }, 404)
+      get "/:code", :rabl => "vehicle.rabl" do
+        @vehicle = BusCache.instance.get(params[:code])
+        if(!@vehicle)
+          error!({ erro: 'Vehicle não encontrado', detalhe: 'Apenas vehicles rodando encontram-se disponiveis aqui.' }, 404)
         end
       end
 
       params do
-        requires :codigo, desc: 'código da linha que deseja os veículos.'
+        requires :code, desc: 'código da line que deseja os veículos.'
       end
-      get "linha/:codigo", :rabl => "veiculos.rabl" do
-        @veiculos = BusCache.instance.get_by_line(params[:codigo])
+      get "line/:code", :rabl => "vehicles.rabl" do
+        @vehicles = BusCache.instance.get_by_line(params[:code])
       end
 
       params do
-        requires :codigo, desc: 'código do veículo que será feito o checkin.'
+        requires :code, desc: 'código do veículo que será feito o checkin.'
       end
       post :checkin do
-        veiculo = BusCache.instance.get(params[:codigo])
-        if(veiculo)
+        vehicle = BusCache.instance.get(params[:code])
+        if(vehicle)
           check_in = Checkin.new
           check_in.user = current_user
-          check_in.veiculo = veiculo
+          check_in.vehicle = vehicle
           return check_in.save!
         end
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Não podemos fazer login em um veiculo que não se encontra rodando.' }, 404)
+        error!({ erro: 'Vehicle não encontrado', detalhe: 'Não podemos fazer login em um vehicle que não se encontra rodando.' }, 404)
       end
 
     end
 
     params do
       requires :type, values: ['con','seg','mov','pon','ace','est']
-      requires :codigo
+      requires :code
     end
     resource :interaction do
-      get ':type/parada/:codigo', :rabl => "interactions.rabl" do
+      get ':type/stop/:code', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
-        parada = Parada.find_by_codigo(params[:codigo])
-        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
-        @reputation = parada.reputation
+        stop = Stop.find_by_code(params[:code])
+        error!({ erro: 'Stop não encontrada', detalhe: 'Verifique o code passado por parametro.' }, 404) if !stop
+        @reputation = stop.reputation
         @interactions = @reputation.interactions_type(@type)
       end
-      get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
-        codigo = params[:codigo]
+      get ':type/vehicle/:code', :rabl => "interactions.rabl" do
+        code = params[:code]
         @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(codigo)
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        @reputation = veiculo.reputation
+        vehicle = Vehicle.find_by_code(code)
+        error!({ erro: 'Vehicle não encontrado', detalhe: 'Verifique o code passado por parametro.' }, 404) if !vehicle
+        @reputation = vehicle.reputation
         @interactions = @reputation.interactions_type(@type)
       end
 
@@ -274,21 +274,21 @@ module StarBus
         requires :comment
         requires :id_facebook
       end
-      post ':type/parada/:codigo',:rabl => "result.rabl" do
+      post ':type/stop/:code',:rabl => "result.rabl" do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
         @result = Result.new
-        parada = Parada.find_by_codigo(params[:codigo])
-        if(parada)
-          parada.reputation ||= Reputation.new
-          parada.reputation.interactions << i
-          @result.status = parada.save! ? "sucess" : "error"
+        stop = Stop.find_by_code(params[:code])
+        if(stop)
+          stop.reputation ||= Reputation.new
+          stop.reputation.interactions << i
+          @result.status = stop.save! ? "sucess" : "error"
         else
           @result.status = "error"
-          @result.mensage = "Parada não encontrada."
+          @result.mensage = "Stop não encontrada."
         end
       end
 
@@ -297,20 +297,20 @@ module StarBus
         requires :comment
         requires :id_facebook
       end
-      post ':type/veiculo/:codigo', :rabl => "result.rabl" do
+      post ':type/vehicle/:code', :rabl => "result.rabl" do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
         @result = Result.new
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        if(veiculo)
-          veiculo.reputation ||= Reputation.new
-          veiculo.reputation.interactions << i
-          @result.status = veiculo.save! ? "sucess" : "error"
+        vehicle = Vehicle.find_by_code(params[:code])
+        if(vehicle)
+          vehicle.reputation ||= Reputation.new
+          vehicle.reputation.interactions << i
+          @result.status = vehicle.save! ? "sucess" : "error"
         else
-          @result.mensage = "Veiculo não encontrado."
+          @result.mensage = "Vehicle não encontrado."
         end
        end
     end
@@ -319,24 +319,24 @@ module StarBus
     #LIMIT = 10
     params do
       requires :type, values: ['con','seg','mov','pon','ace','est']
-      requires :codigo
+      requires :code
     end
     resource :interactions do
 
-      get ':type/parada/:codigo', :rabl => "interactions.rabl" do
+      get ':type/stop/:code', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
-        parada = Parada.find_by_codigo(params[:codigo])
-        error!({ erro: 'Parada não encontrada', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !parada
-        @reputation = parada.reputation
+        stop = Stop.find_by_code(params[:code])
+        error!({ erro: 'Stop não encontrada', detalhe: 'Verifique o code passado por parametro.' }, 404) if !stop
+        @reputation = stop.reputation
         @interactions = @reputation.interactions_type(@type)
       end
 
-      get ':type/veiculo/:codigo', :rabl => "interactions.rabl" do
-        codigo = params[:codigo]
+      get ':type/vehicle/:code', :rabl => "interactions.rabl" do
+        code = params[:code]
         @type = Interaction.type_s[params[:type]]
-        veiculo = Veiculo.find_by_codigo(codigo)
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        @reputation = veiculo.reputation
+        vehicle = Vehicle.find_by_code(code)
+        error!({ erro: 'Vehicle não encontrado', detalhe: 'Verifique o code passado por parametro.' }, 404) if !vehicle
+        @reputation = vehicle.reputation
         @interactions = @reputation.interactions_type(@type)
       end
 
@@ -345,89 +345,89 @@ module StarBus
         requires :comment
         requires :id_facebook
       end
-      post ':type/parada/:codigo' do
+      post ':type/stop/:code' do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
-        parada = Parada.find_by_codigo(params[:codigo])
-        parada.reputation ||= Reputation.new
-        parada.reputation.interactions << i
-        parada.save!
+        stop = Stop.find_by_code(params[:code])
+        stop.reputation ||= Reputation.new
+        stop.reputation.interactions << i
+        stop.save!
       end
 
       params do
         requires :evaluation, values: Interaction.evaluations.values
         requires :comment
       end
-      post ':type/veiculo/:codigo' do
+      post ':type/vehicle/:code' do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])
         i.type_ = params[:type]
         i.comment = params[:comment]
         i.evaluation = params[:evaluation]
-        veiculo = Veiculo.find_by_codigo(params[:codigo])
-        error!({ erro: 'Veiculo não encontrado', detalhe: 'Verifique o codigo passado por parametro.' }, 404) if !veiculo
-        veiculo.reputation ||= Reputation.new
-        veiculo.reputation.interactions << i
-        veiculo.save!
+        vehicle = Vehicle.find_by_code(params[:code])
+        error!({ erro: 'Vehicle não encontrado', detalhe: 'Verifique o code passado por parametro.' }, 404) if !vehicle
+        vehicle.reputation ||= Reputation.new
+        vehicle.reputation.interactions << i
+        vehicle.save!
       end
    end
 
     RAIO_BUSCA_APP = 500
     
-    resource :paradasveiculos do
+    resource :stopsvehicles do
       params do
         requires :lat, type:  Float
         requires :long, type: Float
-        requires :codigo
+        requires :code
       end
-      get "linha/:codigo", :rabl => "paradas_veiculos.rabl" do
-        @linha = Linha.find_by_codigo(params[:codigo])
-        if(@linha)
+      get "line/:code", :rabl => "stops_vehicles.rabl" do
+        @line = Line.find_by_code(params[:code])
+        if(@line)
           lon = params[:long]
           lat = params[:lat]
-          @paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, @linha.paradas)
-          if(!@paradas || @paradas.empty?)
-            @paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @linha.paradas)
+          @stops = StransAPi.instance.stops_proximas(lon, lat, RAIO_BUSCA_APP, @line.stops)
+          if(!@stops || @stops.empty?)
+            @stops = StransAPi.instance.stops_proximas(lon, lat, (RAIO_BUSCA_APP * 2), @line.stops)
           end
-          @veiculos = BusCache.instance.get_by_line(params[:codigo])
-          @veiculos.each{|v| v.linha = @linha.codigo } if @veiculos
+          @vehicles = BusCache.instance.get_by_line(params[:code])
+          @vehicles.each{|v| v.line = @line.code } if @vehicles
           return
         end
-        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o codigo da linha passado por parametro.' }, 404)
+        error!({ erro: 'Line nao encontrada', detalhe: 'Verifique o code da line passado por parametro.' }, 404)
       end
 
       params do
         requires :lat, type:  Float
         requires :long, type: Float
-        requires :codigos, type: Array
+        requires :codes, type: Array
       end
-      get 'linha', rabl: 'paradas_veiculos0.rabl' do
-        linhas = Linha.where(codigo: params[:codigos]).order('codigo ASC')
-        @veiculos = []
-        @paradas = []
-        if linhas && !linhas.empty?
-          linhas.each do |linha|
+      get 'line', rabl: 'stops_vehicles0.rabl' do
+        lines = Line.where(code: params[:codes]).order('code ASC')
+        @vehicles = []
+        @stops = []
+        if lines && !lines.empty?
+          lines.each do |line|
             lon = params[:long]
             lat = params[:lat]
-            paradas = StransAPi.instance.paradas_proximas(lon, lat, RAIO_BUSCA_APP, linha.paradas)
-            if paradas.empty?
-              paradas = StransAPi.instance.paradas_proximas(lon, lat, (RAIO_BUSCA_APP * 2), linha.paradas)
+            stops = StransAPi.instance.stops_proximas(lon, lat, RAIO_BUSCA_APP, line.stops)
+            if stops.empty?
+              stops = StransAPi.instance.stops_proximas(lon, lat, (RAIO_BUSCA_APP * 2), line.stops)
             end
-            @paradas.concat(paradas)
-            veiculos = BusCache.instance.get_by_line(linha.codigo)
-            if veiculos && !veiculos.empty?
-              veiculos.each { |v| v.linha.codigo = linha.codigo }
-              @veiculos.concat(veiculos)
+            @stops.concat(stops)
+            vehicles = BusCache.instance.get_by_line(line.code)
+            if vehicles && !vehicles.empty?
+              vehicles.each { |v| v.line.code = line.code }
+              @vehicles.concat(vehicles)
             end
           end
-          @paradas = Set.new(@paradas)
-          @veiculos = Set.new(@veiculos)
+          @stops = Set.new(@stops)
+          @vehicles = Set.new(@vehicles)
           return
         end
-        error!({ erro: 'Linha nao encontrada', detalhe: 'Verifique o(s) codigo(s) da(s) linha(s) passado por parametro.' }, 404)
+        error!({ erro: 'Line nao encontrada', detalhe: 'Verifique o(s) code(s) da(s) line(s) passado por parametro.' }, 404)
       end
     end
   end #class

@@ -2,6 +2,6 @@ require "active_record"
 
 class Checkin < ActiveRecord::Base
   belongs_to :user
-  belongs_to :parada
-  belongs_to :veiculo
+  belongs_to :stop
+  belongs_to :vehicle
 end

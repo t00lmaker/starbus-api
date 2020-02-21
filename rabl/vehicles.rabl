@@ -1,5 +1,5 @@
-object @veiculo
-attributes :codigo, :hora, :lat, :long, :last_lat, :last_long
+collection @vehicles, :root => :vehicles, :object_root => false
+attributes :code, :hora, :lat, :long, :last_lat, :last_long
 child :reputation do |ele|
   node(:mov){ ele.media('MOVIMENTACAO') }
   node(:est){ ele.media('ESTADO') }
@@ -7,6 +7,6 @@ child :reputation do |ele|
   node(:con){ ele.media('CONFORTO') }
   node(:ace){ ele.media('ACESSO') }
 end
-child :linha  => :linha do
-  attributes :codigo, :denominacao, :retorno, :origem, :circular
+child :line  => :line do
+  attributes :code, :denominacao, :retorno, :origem, :circular
 end

@@ -16,9 +16,9 @@ class StransAPi
   end
 
   # Chamdadas aos servicos padroes da API
-  def get(path, busca=nil)
+  def get(path, search=nil)
     begin
-      return @client.get(path, busca)
+      return @client.get(path, search)
     rescue
       return nil
     end
@@ -26,34 +26,34 @@ class StransAPi
 
   RAIO_TERRA = 6378.137 #KM
 
-  # retorna todas as Paradas próximas a as coordenadas passadas.
-  def paradas_proximas(long, lat, dist, sources = nil)
-    paradas = []
-    sources ||= Parada.all
-    sources.each do |parada|
-      if(!parada.long.nil? && !parada.long.nil?)
-        dLong = calc_distan(long, parada.long)
-        dLat  = calc_distan(lat, parada.lat)
+  # retorna todas as Stops próximas a as coordenadas passadas.
+  def stops_proximas(long, lat, dist, sources = nil)
+    stops = []
+    sources ||= Stop.all
+    sources.each do |stop|
+      if(!stop.long.nil? && !stop.long.nil?)
+        dLong = calc_distan(long, stop.long)
+        dLat  = calc_distan(lat, stop.lat)
 
         #mutiplicacao do sen da metade da distancia da Lat;
         msmdl = Math::sin(dLat/2) * Math::sin(dLat/2)
         #mutiplicaçao cos da Latitude * PI
-        mclPI = Math::cos(lat * Math::PI / 180) * Math::cos(parada.lat * Math::PI / 180)
+        mclPI = Math::cos(lat * Math::PI / 180) * Math::cos(stop.lat * Math::PI / 180)
         #mutiplicacao da metade do seno
         mmds = Math::sin(dLong/2) * Math::sin(dLong/2)
         a = msmdl + mclPI * mmds
 
         c = 2 * Math::atan2(Math::sqrt(a), Math::sqrt(1-a))
         d = RAIO_TERRA * c
-        dist_parada = d * 1000 # distancia em metros
+        dist_stop = d * 1000 # distancia em metros
 
-        if(dist_parada < dist)
-          parada.dist = dist_parada # metros
-          paradas << parada
+        if(dist_stop < dist)
+          stop.dist = dist_stop # metros
+          stops << stop
         end
       end
     end
-    paradas.sort! { |a, b|  a.dist <=> b.dist }
+    stops.sort! { |a, b|  a.dist <=> b.dist }
   end
 
   private

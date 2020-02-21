@@ -5,8 +5,8 @@ require 'otr-activerecord'
 require 'bundler/setup'
 
 require_relative 'starbus-api'
-require_relative 'model/linha'
-require_relative 'model/parada'
+require_relative 'model/line'
+require_relative 'model/stop'
 
 
 load 'tasks/otr-activerecord.rake'

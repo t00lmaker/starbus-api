@@ -1,11 +1,11 @@
-class CreateVeiculo < ActiveRecord::Migration[5.0][5.0]
+class CreateVehicle < ActiveRecord::Migration[5.0][5.0]
   def self.up
-    create_table :veiculos do |t|
-      t.string :codigo
+    create_table :vehicles do |t|
+      t.string :code
       t.timestamps null: false
     end
   end
   def self.down
-    drop_table :veiculos
+    drop_table :vehicles
   end
 end

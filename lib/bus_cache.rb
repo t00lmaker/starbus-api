@@ -1,9 +1,9 @@
 require 'singleton'
 require 'lazy-strans-client'
 require 'timerizer'
-require_relative '../model/veiculo'
+require_relative '../model/vehicle'
 require_relative '../model/snapshot'
-require_relative '../model/linha'
+require_relative '../model/line'
 
 
 # Essa classe deve atualizar um cache
@@ -25,17 +25,17 @@ class BusCache
     valids(@buses_by_code.values)
   end
 
-  def get(codigo)
+  def get(code)
     update
-    valid?(@buses_by_code[codigo]) ? @buses_by_code[codigo] : nil
+    valid?(@buses_by_code[code]) ? @buses_by_code[code] : nil
   end
 
-  def get_by_line(cod_linha)
+  def get_by_line(cod_line)
     update
-    veiculos = StransAPi.instance.get(:veiculos_linha, cod_linha)
-    load_in_map(veiculos)
-    veiculos = @buses_by_line[cod_linha]
-    veiculos ? valids(veiculos.values) : nil
+    vehicles = StransAPi.instance.get(:vehicles_line, cod_line)
+    load_in_map(vehicles)
+    vehicles = @buses_by_line[cod_line]
+    vehicles ? valids(vehicles.values) : nil
   end
 
   def updated?
@@ -48,10 +48,10 @@ class BusCache
     Time.now.utc.localtime("-03:00")
   end
 
-  # valida por meio do horario veiculos strans e starbus.
-  def valid?(veiculo)
-    if veiculo
-      hora_as_array = veiculo.hora.split(':')
+  # valida por meio do horario vehicles strans e starbus.
+  def valid?(vehicle)
+    if vehicle
+      hora_as_array = vehicle.hora.split(':')
       hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
       time_veic = now.change(hash_h)
       return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
@@ -67,47 +67,47 @@ class BusCache
     unless updated?
       reset if(!@last_update || @last_update.day != now.day)
       @last_update = now
-      veiculos = StransAPi.instance.get(:veiculos)
-      load_in_map(veiculos)
+      vehicles = StransAPi.instance.get(:vehicles)
+      load_in_map(vehicles)
     end
     save_snapshot
   end
 
-  def load_in_map(veiculos_strans)
-    veiculos_update = []
-    if veiculos_strans && !veiculos_strans.is_a?(ErroStrans)
-      veiculos_strans.each do |veiculo_strans|
-        next unless valid?(veiculo_strans)
-        veiculo = load_or_save(veiculo_strans)
-        veiculos_update << veiculo
-        @buses_by_code[veiculo.codigo] = veiculo
-        @buses_by_line[veiculo.linha.codigo] ||= {}
-        @buses_by_line[veiculo.linha.codigo][veiculo.codigo] = veiculo
+  def load_in_map(vehicles_strans)
+    vehicles_update = []
+    if vehicles_strans && !vehicles_strans.is_a?(ErroStrans)
+      vehicles_strans.each do |vehicle_strans|
+        next unless valid?(vehicle_strans)
+        vehicle = load_or_save(vehicle_strans)
+        vehicles_update << vehicle
+        @buses_by_code[vehicle.code] = vehicle
+        @buses_by_line[vehicle.line.code] ||= {}
+        @buses_by_line[vehicle.line.code][vehicle.code] = vehicle
       end
     end
-    veiculos_update
+    vehicles_update
   end
 
-  def load_or_save(veiculo_strans)
-    codigo = veiculo_strans.codigoVeiculo
-    veiculo = Veiculo.find_by_codigo(codigo)
-    unless veiculo 
-      veiculo = Veiculo.create(codigo: codigo, reputation: Reputation.new)
+  def load_or_save(vehicle_strans)
+    code = vehicle_strans.codeVehicle
+    vehicle = Vehicle.find_by_code(code)
+    unless vehicle 
+      vehicle = Vehicle.create(code: code, reputation: Reputation.new)
     end
-    veiculo.merge(veiculo_strans)
-    load_last_position(veiculo)
-    veiculo
+    vehicle.merge(vehicle_strans)
+    load_last_position(vehicle)
+    vehicle
   end
 
-  def load_last_position(veiculo)
-    last_veiculo = @buses_by_code[veiculo.codigo]
-    if last_veiculo
-      if last_veiculo.lat == veiculo.lat && last_veiculo.long == veiculo.long
-        veiculo.last_lat = last_veiculo.last_lat
-        veiculo.last_long = last_veiculo.last_long
+  def load_last_position(vehicle)
+    last_vehicle = @buses_by_code[vehicle.code]
+    if last_vehicle
+      if last_vehicle.lat == vehicle.lat && last_vehicle.long == vehicle.long
+        vehicle.last_lat = last_vehicle.last_lat
+        vehicle.last_long = last_vehicle.last_long
       else
-        veiculo.last_lat = last_veiculo.lat
-        veiculo.last_long = last_veiculo.long
+        vehicle.last_lat = last_vehicle.lat
+        vehicle.last_long = last_vehicle.long
       end
     end
   end
@@ -120,11 +120,11 @@ class BusCache
 
   def save_snapshot
     unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
-      linhas_buses = {}
+      lines_buses = {}
       @buses_by_line.each do |k,v|
-        linhas_buses[k] = v.values
+        lines_buses[k] = v.values
       end
-      Snapshot.create({value: linhas_buses.to_json, data: Time.now - 3.hours})
+      Snapshot.create({value: lines_buses.to_json, data: Time.now - 3.hours})
       @last_save = now
     end
   end
