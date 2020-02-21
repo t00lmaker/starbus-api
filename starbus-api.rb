@@ -34,8 +34,41 @@ module StarBus
         User.all.first
       end
     end
+
+    resource :aplicacoes do
+      params do
+      end
+      post '/' do
+      
+      end
+      
+      get '/' do
+      
+      end
+      
+      params do
+        requires :id, desc: 'id da aplicacão para retorno dos dados.'
+      end
+      get '/:id' do 
+      
+      end
+      
+      params do
+        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+      end
+      put '/:id' do 
+      
+      end
+
+      params do
+        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+      end
+      delete '/:id' do 
+      
+      end
+    end
     
-    resource :user do
+    resource :users do
       params do
         requires :user, desc: 'Código identificador do facebook do usuário.'
         requires :hash, desc: 'hash de autenticação facebook.'
@@ -48,9 +81,10 @@ module StarBus
         hash = FaceControl.instance.auth(params)
         { "hash" => hash}
       end
+      
       params do
-        require :username, desc: 'username/email para login.'
-        require :password, desc: 'password para login.'
+        requires :username, desc: 'username/email para login.'
+        requires :password, desc: 'password para login.'
       end
       post :login do
         
@@ -342,8 +376,7 @@ module StarBus
    end
 
     RAIO_BUSCA_APP = 500
-
-
+    
     resource :paradasveiculos do
       params do
         requires :lat, type:  Float
