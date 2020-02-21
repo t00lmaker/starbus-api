@@ -10,10 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2016_10_01_030617) do
+ActiveRecord::Schema.define(version: 2020_02_20_015935) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "application", force: :cascade do |t|
+    t.string "name"
+    t.string "description"
+    t.string "key"
+    t.bigint "user_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["user_id"], name: "index_application_on_user_id"
+  end
 
   create_table "checkins", id: :serial, force: :cascade do |t|
     t.integer "validate_to", default: 10
@@ -90,17 +100,19 @@ ActiveRecord::Schema.define(version: 2016_10_01_030617) do
   end
 
   create_table "tokens", id: :serial, force: :cascade do |t|
-    t.string "hash_random"
-    t.integer "validate_to", default: 10
+    t.string "jwt"
+    t.integer "validate", default: 10
     t.integer "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["hash_random"], name: "index_tokens_on_hash_random"
+    t.index ["jwt"], name: "index_tokens_on_jwt"
     t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
   create_table "users", id: :serial, force: :cascade do |t|
     t.string "name"
+    t.string "username"
+    t.string "hash_pass"
     t.string "email"
     t.string "url_facebook"
     t.string "url_photo"
