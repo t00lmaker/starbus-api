@@ -1,4 +1,4 @@
-class CreateSugestion < ActiveRecord::Migration[5.0]
+class CreateSugestions < ActiveRecord::Migration[5.0]
   def self.up
     create_table :sugestions do |t|
       t.text :text, index: true
