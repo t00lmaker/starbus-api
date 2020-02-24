@@ -1,4 +1,4 @@
-class CreateLineStop < ActiveRecord::Migration[5.0]
+class CreateLineStop < ActiveRecord::Migration[6.0]
   def self.up
     create_join_table :lines, :stops 
   end

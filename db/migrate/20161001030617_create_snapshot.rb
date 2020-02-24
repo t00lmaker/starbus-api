@@ -1,4 +1,4 @@
-class CreateSnapshots < ActiveRecord::Migration[5.0]
+class CreateSnapshots < ActiveRecord::Migration[6.0]
   def self.up
     create_table :snapshots do |t|
       t.text :value

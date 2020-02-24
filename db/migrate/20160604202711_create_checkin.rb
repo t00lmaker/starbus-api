@@ -1,4 +1,4 @@
-class CreateCheckins < ActiveRecord::Migration[5.0]
+class CreateCheckins < ActiveRecord::Migration[6.0]
   def self.up
     create_table :checkins do |t|
       t.integer :validate_to, default: 10
