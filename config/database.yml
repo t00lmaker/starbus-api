@@ -13,7 +13,7 @@ test: &test
   encoding: utf-8
   database: starbus_test
   pool: 5
-  username: toolmaker
+  username: postgres
   password:
 
 production:
