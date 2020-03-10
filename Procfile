@@ -1,1 +1,1 @@
-web: rackup -p $PORT
+web: ruby config.rb -p $PORT

@@ -1,15 +1,11 @@
+require 'rack'
 require 'envyable'
 require 'rabl'
 require 'grape'
 require 'otr-activerecord'
 require_relative 'starbus-api'
-require_relative 'starbus-web'
 
-CONFIG_ENV = ENV['RACK_ENV']
-
-use Rack::Config do |env|
-  env['api.tilt.root'] = 'rabl'
-end
+CONFIG_ENV = ENV['RACK_ENV'] || 'development'
 
 Rabl.configure do |config|
   config.replace_nil_values_with_empty_strings = false
@@ -19,7 +15,10 @@ end
 
 OTR::ActiveRecord.configure_from_file! 'config/database.yml'
 
-use OTR::ActiveRecord::ConnectionManagement
+app = Rack::Builder.new do
+  use Rack::Config do |env| env['api.tilt.root'] = 'rabl' end
+  use OTR::ActiveRecord::ConnectionManagement
+  run StarBus::API.new
+end.to_app
 
-run Rack::URLMap.new('/' => StarBus::Web.new,
-                     '/api' => StarBus::API)
+Rack::Handler::WEBrick.run(app, Port: 9292)
