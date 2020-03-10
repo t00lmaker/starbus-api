@@ -1,4 +1,4 @@
-class CreateVehicle < ActiveRecord::Migration[6.0]
+class CreateVehicles < ActiveRecord::Migration[6.0]
   def self.up
     create_table :vehicles do |t|
       t.string :code

@@ -3,11 +3,9 @@ class CreateUsers < ActiveRecord::Migration[6.0]
     create_table :users do |t|
       t.string :name
       t.string :username
-      t.string :hash_pass
+      t.string :password_hash
       t.string :email
-      t.string :url_facebook
       t.string :url_photo
-      t.text :id_facebook
       t.timestamps null: false
     end
   end

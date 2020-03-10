@@ -1,4 +1,4 @@
-class CreateReputation < ActiveRecord::Migration[6.0]
+class CreateReputations < ActiveRecord::Migration[6.0]
   def self.up
     create_table :reputations do |t|
       t.belongs_to :vehicle, index: true

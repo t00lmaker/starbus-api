@@ -4,7 +4,7 @@ class CreateStops < ActiveRecord::Migration[6.0]
     create_table :stops do |t|
       t.string :code
       t.string :description
-      t.text :andress
+      t.text :address
       t.decimal :lat
       t.decimal :long
       t.timestamps null: false

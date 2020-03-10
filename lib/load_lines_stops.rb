@@ -4,10 +4,26 @@ require './model/stop'
 
 class LoadLinesStops
 
+  @@line_attrs = { 
+    "codigoLinha" => :code,
+    "denominacao" => :description,
+    "origem"      => :origin,
+    "circular"    => :circular,
+    "retorno"     => :return  
+  }
+
+  @@stops_attrs = {
+    "codigoLinha" => :code,
+    "denominacao" => :description,
+    "endereco"    => :address,
+    "lat"         => :lat,
+    "long"        => :long
+  }
+
   def init
     @stops = {}
     @strans = StransClient.new(ENV['STRANS_MAIL'], ENV['STRANS_PASS'],ENV['STRANS_KEY'])
-    lines = @strans.get(:lines)
+    lines = @strans.get(:linhas)
     if(lines.is_a?(ErroStrans))
       raise RuntimeError, "Strans Api error '#{lines.to_json}'"
     else 
@@ -17,10 +33,10 @@ class LoadLinesStops
 
   def create_lines(lines)
     lines.each do |l|
-      has_line = Line.find_by_code(l.codeLine)
+      has_line = Line.find_by_code(l.codigoLinha)
       unless(has_line)
         line = transform_in_lines(l)
-        stops = @strans.get(:stops_line, line.code)
+        stops = @strans.get(:paradas_linha, line.code)
         if(stops.is_a?(ErroStrans))
           puts "Strans Api error '#{stops.to_json}'"
         else
@@ -33,34 +49,31 @@ class LoadLinesStops
     end
   end
 
-  #Transforma um line do modelo Strans para uma
-  #line do modelo starbus.
-  def transform_in_lines(line_strans)
+  #Transforma um line do modelo Strans para uma line do modelo starbus.
+  def transform_in_lines(linha_strans)
     line_hash = {}
-    line_strans.instance_variables.each do |var|
+    linha_strans.instance_variables.each do |var|
       attr_name = var.to_s.delete("@")
-      attr_name = :code if attr_name == 'codeLine'
-      attr_name = :denominacao if attr_name == 'denomicao'
-      line_hash[attr_name] = line_strans.instance_variable_get(var)
+      attr_name = @@line_attrs[attr_name]
+      line_hash[attr_name] = linha_strans.instance_variable_get(var) if attr_name
     end
-    line_hash = line_hash.except("vehicles")
-    line_hash = line_hash.except("stops")
+    line_hash = line_hash.except("veiculos")
+    line_hash = line_hash.except("paradas")
     Line.new(line_hash)
   end
 
-  def transform_in_stops(stops_strans)
+  def transform_in_stops(parada_strans)
     stop_hash = {}
     stops = []
-    stops_strans.each do |p|
+    parada_strans.each do |p|
       p.instance_variables.each do |var|
         attr_name = var.to_s.delete("@")
-        attr_name = :code if attr_name == 'codeStop'
-        attr_name = :denominacao if attr_name == 'denomicao'
-        stop_hash[attr_name] = p.instance_variable_get(var)
+        attr_name = @@stops_attrs[attr_name]
+        stop_hash[attr_name] = p.instance_variable_get(var) if attr_name
       end
-      stop_hash = stop_hash.except("line")
-      stop = @stops[p.codeStop] || Stop.new(stop_hash)
-      @stops[p.codeStop] = stop
+      stop_hash = stop_hash.except("linha")
+      stop = @stops[p.codigoParada] || Stop.new(stop_hash)
+      @stops[p.codigoParada] = stop
       stop.reputation ||= Reputation.new
       stops << stop
     end
