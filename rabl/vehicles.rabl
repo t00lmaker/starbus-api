@@ -1,12 +1,12 @@
 collection @vehicles, :root => :vehicles, :object_root => false
-attributes :code, :hora, :lat, :long, :last_lat, :last_long
+attributes :code, :time, :lat, :long, :last_lat, :last_long
 child :reputation do |ele|
-  node(:mov){ ele.media('MOVIMENTACAO') }
-  node(:est){ ele.media('ESTADO') }
-  node(:seg){ ele.media('SEGURANCA') }
-  node(:con){ ele.media('CONFORTO') }
-  node(:ace){ ele.media('ACESSO') }
+  node(:time){ ele.media('HORARIO') }
+  node(:state){ ele.media('ESTADO') }
+  node(:safety){ ele.media('SEGURANCA') }
+  node(:comfort){ ele.media('CONFORTO') }
+  node(:accessibility){ ele.media('ACESSIBILIDADE') }
 end
 child :line  => :line do
-  attributes :code, :denominacao, :retorno, :origem, :circular
+  attributes :code, :description, :return, :origin, :circular
 end

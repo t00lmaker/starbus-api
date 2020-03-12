@@ -1,5 +1,5 @@
 object @vehicle
-attributes :code, :hora, :lat, :long, :last_lat, :last_long
+attributes :code, :time, :lat, :long, :last_lat, :last_long
 child :reputation do |ele|
   node(:mov){ ele.media('MOVIMENTACAO') }
   node(:est){ ele.media('ESTADO') }
