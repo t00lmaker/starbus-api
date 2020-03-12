@@ -1,4 +1,7 @@
 require 'grape'
+require 'grape-rabl'
+require 'jwt'
+
 require './model/line'
 require './model/stop'
 require './model/vehicle'
@@ -9,18 +12,21 @@ require './model/token'
 require './model/user'
 require './model/sugestion'
 require './model/result'
+require './model/application'
+require './model/users_application'
 require './lib/load_lines_stops'
 require './lib/load_vehicles'
 require './lib/client_strans'
 require './lib/bus_cache'
 require './lib/face_control'
-require 'grape-rabl'
+
+
 
 I18n.config.available_locales = :en
 
 module StarBus
   class API < Grape::API
-    version 'v1'
+    version 'v2'
     format  :json
     formatter :json, Grape::Formatter::Rabl
 
@@ -34,11 +40,33 @@ module StarBus
         User.all.first
       end
     end
-
+  
+    params do
+      requires :username, desc: 'username/email para login.'
+      requires :password, desc: 'password para login.'
+    end
+    post :login do
+      @app = Application.find_by_key(params[:application])
+      @user = User.find_by_username(params[:username])
+      if @user.password == params[:password]
+        playload = { 
+          user_id: @user.id,
+          app_id:  @app.id
+        }
+        jwt = JWT.encode(payload, nil, 'none')
+        Token.create(jwt: jwt, application: @app)
+        jwt
+      else
+        error!({ erro: 'Falha de autenticação.', detalhe: 'Verifique os dados passados'}, 403)
+      end
+    end
+    
     resource :aplicacoes do
       params do
+        requires :name, desc: 'Nome da aplicação a ser criada.'
+        optional :description, desc: 'Breve descrição da aplicação.' 
       end
-      post '/' do
+      post '/', :rabl => "application.rabl" do
       
       end
       
@@ -82,14 +110,6 @@ module StarBus
         { "hash" => hash}
       end
       
-      params do
-        requires :username, desc: 'username/email para login.'
-        requires :password, desc: 'password para login.'
-      end
-      post :login do
-        
-      end
-
       params do
         optional :user, desc: 'Código identificador do facebook do usuário.'
         optional :email, desc: 'E-mail do usuario.'
@@ -203,11 +223,11 @@ module StarBus
 
     resource :vehicles do
 
-      get :agora, :rabl => "vehicles.rabl" do
+      get '/', :rabl => "vehicles.rabl" do
         @vehicles = BusCache.instance.all
       end
 
-      get "agora/count" do
+      get "count" do
         { count: BusCache.instance.all.size }
       end
 
