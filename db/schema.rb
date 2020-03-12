@@ -10,121 +10,126 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_20_015935) do
+ActiveRecord::Schema.define(version: 2020_02_20_015955) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "application", force: :cascade do |t|
+  create_table "applications", force: :cascade do |t|
     t.string "name"
-    t.string "description"
     t.string "key"
-    t.bigint "user_id"
+    t.string "description"
+    t.integer "ownner_id"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.index ["user_id"], name: "index_application_on_user_id"
+    t.index ["key"], name: "index_applications_on_key"
+    t.index ["ownner_id"], name: "index_applications_on_ownner_id"
   end
 
-  create_table "checkins", id: :serial, force: :cascade do |t|
+  create_table "applications_users", id: false, force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "application_id", null: false
+    t.index ["user_id", "application_id"], name: "index_applications_users_on_user_id_and_application_id", unique: true
+  end
+
+  create_table "checkins", force: :cascade do |t|
     t.integer "validate_to", default: 10
-    t.integer "user_id"
-    t.integer "stop_id"
-    t.integer "vehicle_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.bigint "stop_id"
+    t.bigint "vehicle_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["stop_id"], name: "index_checkins_on_stop_id"
     t.index ["user_id"], name: "index_checkins_on_user_id"
     t.index ["vehicle_id"], name: "index_checkins_on_vehicle_id"
   end
 
-  create_table "interactions", id: :serial, force: :cascade do |t|
+  create_table "interactions", force: :cascade do |t|
     t.string "type_"
     t.string "evaluation"
     t.text "comment"
-    t.integer "reputation_id"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "reputation_id"
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["reputation_id"], name: "index_interactions_on_reputation_id"
     t.index ["user_id"], name: "index_interactions_on_user_id"
   end
 
-  create_table "lines", id: :serial, force: :cascade do |t|
+  create_table "lines", force: :cascade do |t|
     t.string "code"
-    t.string "denominacao"
-    t.string "retorno"
-    t.string "origem"
+    t.string "description"
+    t.string "return"
+    t.string "origin"
     t.boolean "circular"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "lines_stops", id: false, force: :cascade do |t|
-    t.integer "line_id", null: false
-    t.integer "stop_id", null: false
+    t.bigint "line_id", null: false
+    t.bigint "stop_id", null: false
   end
 
-  create_table "stops", id: :serial, force: :cascade do |t|
-    t.string "code"
-    t.string "denominacao"
-    t.text "endereco"
-    t.decimal "lat"
-    t.decimal "long"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "reputations", id: :serial, force: :cascade do |t|
-    t.integer "vehicle_id"
-    t.integer "stop_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+  create_table "reputations", force: :cascade do |t|
+    t.bigint "vehicle_id"
+    t.bigint "stop_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["stop_id"], name: "index_reputations_on_stop_id"
     t.index ["vehicle_id"], name: "index_reputations_on_vehicle_id"
   end
 
-  create_table "snapshots", id: :serial, force: :cascade do |t|
+  create_table "snapshots", force: :cascade do |t|
     t.text "value"
     t.datetime "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "sugestions", id: :serial, force: :cascade do |t|
+  create_table "stops", force: :cascade do |t|
+    t.string "code"
+    t.string "description"
+    t.text "address"
+    t.decimal "lat"
+    t.decimal "long"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "sugestions", force: :cascade do |t|
     t.text "text"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["text"], name: "index_sugestions_on_text"
     t.index ["user_id"], name: "index_sugestions_on_user_id"
   end
 
-  create_table "tokens", id: :serial, force: :cascade do |t|
+  create_table "tokens", force: :cascade do |t|
     t.string "jwt"
     t.integer "validate", default: 10
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.bigint "application_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["application_id"], name: "index_tokens_on_application_id"
     t.index ["jwt"], name: "index_tokens_on_jwt"
-    t.index ["user_id"], name: "index_tokens_on_user_id"
   end
 
-  create_table "users", id: :serial, force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "username"
-    t.string "hash_pass"
+    t.string "password_hash"
     t.string "email"
-    t.string "url_facebook"
     t.string "url_photo"
-    t.text "id_facebook"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
-  create_table "vehicles", id: :serial, force: :cascade do |t|
+  create_table "vehicles", force: :cascade do |t|
     t.string "code"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end
