@@ -7,8 +7,8 @@ class Line < ActiveRecord::Base
 
   def merge(line_strans)
     if line_strans
-      self.code = line_strans.codeLine
-      self.denominacao = line_strans.denominacao
+      self.code = line_strans.codigoLinha
+      self.description = line_strans.denominacao
     end
     self
   end
