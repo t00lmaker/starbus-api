@@ -13,7 +13,7 @@ class LoadLinesStops
   }
 
   @@stops_attrs = {
-    "codigoLinha" => :code,
+    "codigoParada" => :code,
     "denominacao" => :description,
     "endereco"    => :address,
     "lat"         => :lat,
@@ -71,7 +71,6 @@ class LoadLinesStops
         attr_name = @@stops_attrs[attr_name]
         stop_hash[attr_name] = p.instance_variable_get(var) if attr_name
       end
-      stop_hash = stop_hash.except("linha")
       stop = @stops[p.codigoParada] || Stop.new(stop_hash)
       @stops[p.codigoParada] = stop
       stop.reputation ||= Reputation.new
