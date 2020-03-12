@@ -4,15 +4,21 @@ class Interaction < ActiveRecord::Base
   belongs_to :reputation
   belongs_to :user
 
-  enum type_: { ace:'ACESSO',
-                con:'CONFORTO',
-                est:'ESTADO',
-                mov:'MOVIMENTACAO',
-                pon:'PONTUALIDADE',
-                seg:'SEGURANCA',
+  enum type_: { accessibility:  'ACESSIBILITY',
+                comfort:        'COMFORT',
+                state:          'STATE',
+                environment:    'ENVIRONMENT',
+                time:           'TIMER',
+                safety:         'SAFETY',
+                driver:         'DRIVER',
+                frequency:      'FREQUENCY' 
               }
 
-  enum evaluation: { pessimo: '1', ruim: '2',regular: '3', bom: '4', otimo: '5' }
+  enum evaluation: { terrible:  '1', 
+                     bad:       '2', 
+                     regular:   '3', 
+                     good:      '4', 
+                     great:     '5' }
 
   def evaluation_value()
     Interaction.evaluations[self.evaluation]
