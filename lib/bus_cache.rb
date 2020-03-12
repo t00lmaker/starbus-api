@@ -27,7 +27,7 @@ class BusCache
 
   def get(code)
     update
-    valid?(@buses_by_code[code]) ? @buses_by_code[code] : nil
+    valid?(@buses_by_code[code].time) ? @buses_by_code[code] : nil
   end
 
   def get_by_line(cod_line)
@@ -49,25 +49,22 @@ class BusCache
   end
 
   # valida por meio do horario vehicles strans e starbus.
-  def valid?(vehicle)
-    if vehicle
-      hora_as_array = vehicle.hora.split(':')
-      hash_h = { hour: hora_as_array[0].to_i, min: hora_as_array[1].to_i }
-      time_veic = now.change(hash_h)
-      return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
-    end
-    false
+  def valid?(time)
+    time_as_array = time.split(':')
+    hash_h = { hour: time_as_array[0].to_i, min: time_as_array[1].to_i }
+    time_veic = now.change(hash_h)
+    return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
   end
 
   def valids(buses)
-    buses.select { |v| valid?(v) } if buses
+    buses.select { |v| valid?(v.time) } if buses
   end
 
   def update
     unless updated?
       reset if(!@last_update || @last_update.day != now.day)
       @last_update = now
-      vehicles = StransAPi.instance.get(:vehicles)
+      vehicles = StransAPi.instance.get(:veiculos)
       load_in_map(vehicles)
     end
     save_snapshot
@@ -77,7 +74,7 @@ class BusCache
     vehicles_update = []
     if vehicles_strans && !vehicles_strans.is_a?(ErroStrans)
       vehicles_strans.each do |vehicle_strans|
-        next unless valid?(vehicle_strans)
+        next unless valid?(vehicle_strans.hora)
         vehicle = load_or_save(vehicle_strans)
         vehicles_update << vehicle
         @buses_by_code[vehicle.code] = vehicle
@@ -89,7 +86,7 @@ class BusCache
   end
 
   def load_or_save(vehicle_strans)
-    code = vehicle_strans.codeVehicle
+    code = vehicle_strans.codigoVeiculo
     vehicle = Vehicle.find_by_code(code)
     unless vehicle 
       vehicle = Vehicle.create(code: code, reputation: Reputation.new)
