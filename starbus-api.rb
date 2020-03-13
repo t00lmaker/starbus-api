@@ -31,16 +31,27 @@ module StarBus
     formatter :json, Grape::Formatter::Rabl
 
     before do
-      #puts headers['User-id']
-      #puts headers['Token']
+      authenticate! unless route.settings[:public]
     end
 
-    helpers do
-      def current_user
-        User.all.first
+    helpers do    
+      def load_auth
+        token = headers['Authorization']
+        return false if token.nil?
+        token.slice!("Bearer ") 
+        payload = JWT.decode(token, nil, false)[0]
+        @current_user ||= User.find(payload["user_id"])
+        @app_user ||= Application.find(payload["app_id"])
+        @current_user && @app_user
+      end
+    
+      def authenticate!
+        error!('401 Unauthorized', 401) unless load_auth
       end
     end
-  
+    
+    desc "realiza o login retornando um token de acesso."
+    route_setting :public, true
     params do
       requires :username, desc: 'username/email para login.'
       requires :password, desc: 'password para login.'
@@ -48,8 +59,8 @@ module StarBus
     post :login do
       @app = Application.find_by_key(params[:application])
       @user = User.find_by_username(params[:username])
-      if @user.password == params[:password]
-        playload = { 
+      if @user && @user.password == params[:password]
+        payload = { 
           user_id: @user.id,
           app_id:  @app.id
         }
@@ -61,24 +72,24 @@ module StarBus
       end
     end
     
-    resource :aplicacoes do
+    resource :applications do
       params do
         requires :name, desc: 'Nome da aplicação a ser criada.'
         optional :description, desc: 'Breve descrição da aplicação.' 
       end
       post '/', :rabl => "application.rabl" do
-      
+        @application = Application.create(name: params[:name], description: params[:description], ownner: @current_user)
       end
       
-      get '/' do
-      
+      get '/', :rabl => "applications.rabl" do
+        @applications = Application.find_by(ownner: @current_user)
       end
       
       params do
         requires :id, desc: 'id da aplicacão para retorno dos dados.'
       end
-      get '/:id' do 
-      
+      get '/:id', :rabl => "application.rabl" do 
+        @application = Application.find(params[:id])
       end
       
       params do
