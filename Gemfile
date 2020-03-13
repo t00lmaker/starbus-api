@@ -28,7 +28,8 @@ gem 'grape-rabl'
 #https://github.com/kylewlacy/timerizer
 gem 'timerizer'
 
-gem 'sinatra'
+# Gem para cryptografia
+gem 'bcrypt'
 
 gem 'rake'
 
