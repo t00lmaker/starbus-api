@@ -108,7 +108,7 @@ ActiveRecord::Schema.define(version: 2020_02_20_015955) do
 
   create_table "tokens", force: :cascade do |t|
     t.string "jwt"
-    t.integer "validate", default: 10
+    t.integer "expiration", default: 10
     t.bigint "application_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
