@@ -1,2 +1,2 @@
 object @application => :application
-attributes :name, :description, :key  
+attributes :id, :name, :description, :key  
