@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 2020_02_20_015955) do
     t.string "name"
     t.string "key"
     t.string "description"
+    t.boolean "active", default: true
     t.integer "ownner_id"
     t.datetime "created_at"
     t.datetime "updated_at"

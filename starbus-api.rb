@@ -42,11 +42,20 @@ module StarBus
         payload = JWT.decode(token, nil, false)[0]
         @current_user ||= User.find(payload["user_id"])
         @app_user ||= Application.find(payload["app_id"])
-        @current_user && @app_user
+        @current_user && @app_user && in_user_app?(@app_user)
       end
     
       def authenticate!
         error!('401 Unauthorized', 401) unless load_auth
+      end
+
+      def in_user_app?(app)
+        @current_user.applications.include?(app)
+      end
+
+      def validate_app!(app)
+        error!({ erro: 'Application not found', detalhe: 'Check id param'}, 404) unless app
+        error!({ erro: 'Access Error', detalhe: 'You do not have access'}, 401) unless in_user_app?(app)
       end
     end
     
@@ -75,35 +84,43 @@ module StarBus
     resource :applications do
       params do
         requires :name, desc: 'Nome da aplicação a ser criada.'
-        optional :description, desc: 'Breve descrição da aplicação.' 
+        requires :description, desc: 'Breve descrição da aplicação.'
       end
       post '/', :rabl => "application.rabl" do
-        @application = Application.create(name: params[:name], description: params[:description], ownner: @current_user)
+        @application = Application.create(name: params[:name], description: params[:description], ownner: @current_user, users: [@current_user])
       end
       
       get '/', :rabl => "applications.rabl" do
-        @applications = Application.find_by(ownner: @current_user)
+        @applications = Application.where(ownner: @current_user)
       end
       
       params do
         requires :id, desc: 'id da aplicacão para retorno dos dados.'
       end
-      get '/:id', :rabl => "application.rabl" do 
-        @application = Application.find(params[:id])
+      get ':id', :rabl => "application.rabl" do 
+        @application = Application.find(params[:id]) rescue nil
+        validate_app!(@application)
       end
       
       params do
-        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+        requires :id, desc: 'id da aplicacão para retorno dos dados.'
+        requires :name, desc: 'Nome da aplicação a ser criada.'
+        requires :description, desc: 'Breve descrição da aplicação.'
+        requires :active, desc: ''
       end
-      put '/:id' do 
-      
+      put ':id', :rabl => "application.rabl" do
+        @application = Application.find(params[:id]) rescue nil
+        validate_app!(@application)
+        @application.update(name: params[:name], description: params[:description], active: params[:active])
       end
 
       params do
         requires :id, desc: 'id da aplicacão que deseja atualizar.'
       end
-      delete '/:id' do 
-      
+      delete ':id', :rabl => "application.rabl" do 
+        @application = Application.find(params[:id]) rescue nil
+        validate_app!(@application)
+        @application.update(active: false)
       end
     end
     
@@ -156,14 +173,12 @@ module StarBus
       get '/', :rabl => "lines.rabl" do
         search = params[:search]
         if(search)
-          puts search
           sql = "code like ? OR denominacao like ? OR retorno like ?"
           search = ActiveSupport::Inflector.transliterate(search)
           search = search.upcase
           split = search.split
           @lines = Set.new
           split.each do |termo|
-              puts "> #{ termo }"
               @lines = @lines + Line
                           .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
                           .order("code asc")
