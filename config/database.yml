@@ -7,7 +7,7 @@ development:
   username: postgres
   password:
 
-test: &test
+test:
   adapter: postgresql
   host: localhost
   encoding: utf-8

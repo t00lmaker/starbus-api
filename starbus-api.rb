@@ -65,7 +65,7 @@ module StarBus
       requires :username, desc: 'username/email para login.'
       requires :password, desc: 'password para login.'
     end
-    post :login do
+    post 'login' do
       @app = Application.find_by_key(params[:application])
       @user = User.find_by_username(params[:username])
       if @user && @user.password == params[:password]
@@ -75,7 +75,7 @@ module StarBus
         }
         jwt = JWT.encode(payload, nil, 'none')
         Token.create(jwt: jwt, application: @app)
-        jwt
+        {token: jwt} 
       else
         error!({ erro: 'Falha de autenticação.', detalhe: 'Verifique os dados passados'}, 403)
       end
@@ -126,16 +126,13 @@ module StarBus
     
     resource :users do
       params do
-        requires :user, desc: 'Código identificador do facebook do usuário.'
-        requires :hash, desc: 'hash de autenticação facebook.'
+        requires :email, desc: 'E-mail do usuario.'
+        requires :password, desc: 'E-mail do usuario.'
         optional :name, desc: 'Nome do usuario.'
-        optional :email, desc: 'E-mail do usuario.'
         optional :url_photo, desc: 'E-mail do usuario.'
-        optional :url_face, desc: 'Nome do usuario.'
       end
-      post :login_face do
-        hash = FaceControl.instance.auth(params)
-        { "hash" => hash}
+      post do
+       
       end
       
       params do
@@ -155,10 +152,11 @@ module StarBus
     end
 
     resource :lines do
+
       params do
         requires :codes, type: Array, desc: 'códigos da lines que deseja'
       end
-      get '/get', :rabl => "lines.rabl" do
+      get '/', :rabl => "lines.rabl" do
         @lines = Line.where(code: params[:codes]).order('code ASC')
         if !@lines
           error!({ erro: 'Line não encontrada.', detalhe: 'Verifique o code passado por parametro.' }, 404)
@@ -175,94 +173,90 @@ module StarBus
         if(search)
           sql = "code like ? OR denominacao like ? OR retorno like ?"
           search = ActiveSupport::Inflector.transliterate(search)
-          search = search.upcase
-          split = search.split
+          split = search.upcase.split
           @lines = Set.new
           split.each do |termo|
-              @lines = @lines + Line
-                          .where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%")
-                          .order("code asc")
+              @lines = @lines + Line.where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%").order("code asc")
           end
         else
           @lines = Line.order(:code)
         end
       end
 
-      desc 'Recarrega todas as Lines e salva com base na API Integrah.'
-      get :load do
+      desc 'Loade all lines to source (API Integrah).'
+      get 'load' do
         LoadLinesStops.new.init
-      end
-
-      desc 'Pega as lines da para com o código passado.'
-      params do
-        requires :code, desc: 'código da stop que deseja as lines.'
-      end
-      get 'stop/:code', :rabl => "lines.rabl" do
-        stop = Stop.find_by_code(params[:code])
-        if stop
-          @lines = stop.lines.order('code ASC')
-        else
-          error!({ erro: 'Stop nao registrada', detalhe: 'Verifique o code passado por parametro.' }, 404)
-        end
       end
 
     end #resource :line
 
     resource :stops do
-      
-      desc 'Retornas as stops registradas, filtradas ou não pelo parâmetro código.'
-      params do
-	      requires :code, desc: 'código da stop.'
-      end
-      get '/', :rabl => "stops.rabl"  do
-          @stops = Stop.find_by_code(params[:code]) ||
-          error!({ erro: 'Stop nao registrada', detalhe: 'Verifique o code passado por parametro.' }, 404)
-      end
 
-      get :all, :rabl => "stops_basic.rabl" do
+      desc 'Return all lines.'
+      get '/', :rabl => "stops_basic.rabl" do
         @stops = Stop.includes(:lines)
       end
 
+      desc 'Return line by code.'
       params do
-        requires :code, desc: 'código da stop que será feito o checkin.'
+        requires :code, desc: 'Stop code to return.'
       end
-      post :checkin do
-        check_in = Checkin.new
-        check_in.user = current_user
-        check_in.stop = Stop.find_by_code(params[:code])
-        check_in.save!
+      get ':code', :rabl => "stops.rabl"  do
+          @stops = Stop.find_by_code(params[:code]) ||
+          error!({ erro: 'Stop not found', detalhe: 'Stop by code not found' }, 404)
       end
 
+      desc 'Return lines by stop.'
+      params do
+        requires :code, desc: 'Stop code to return lines.'
+      end
+      get ':code/lines', :rabl => "lines.rabl" do
+        stop = Stop.find_by_code(params[:code])
+        if stop
+          @lines = stop.lines.order('code ASC')
+        else
+          error!({ erro: 'Stop not found', detalhe: 'Stop by code not found' }, 404)
+        end
+      end
+
+      desc 'Return stops closes to localization.'
       params do
         requires :lat, type:  Float
         requires :long, type: Float
         requires :dist, type: Float
       end
-      get :proximas, :rabl => "stops.rabl" do
+      get 'closes', :rabl => "stops.rabl" do
         @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], params[:dist])
         if(!@stops || @stops.empty?)
           @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], (params[:dist] * 2))
         end
       end
 
+      desc 'Create checkin to stop with code.'
+      params do
+        requires :code, desc: 'Stop code to checkin.'
+      end
+      post ':code/checkin' do
+        stop = Stop.find_by_code(params[:code])
+        if(stop)
+          Checkin.create(user: @current_user, stop: stop)
+        else
+          error!({ erro: 'Stop not found', detalhe: 'Stop by code not found' }, 404)
+        end
+      end
+
     end
 
     resource :vehicles do
-
+      
+      desc 'Return all vehicles.' 
       get '/', :rabl => "vehicles.rabl" do
         @vehicles = BusCache.instance.all
       end
 
-      get "count" do
-        { count: BusCache.instance.all.size }
-      end
-
-      get :load do
-        LoadVehicles.new.init
-      end
-
+      desc 'Return vehicle by code.'
       params do
-        requires :code, desc: 'código do veciculo.'
+        requires :code, desc: 'Code vehicle to return.'
       end
       get "/:code", :rabl => "vehicle.rabl" do
         @vehicle = BusCache.instance.get(params[:code])
@@ -271,27 +265,31 @@ module StarBus
         end
       end
 
+      desc 'Return number vehicles online.'
+      get "count" do
+        { count: BusCache.instance.all.size }
+      end
+
+      desc 'Return vehicles by line.'
       params do
-        requires :code, desc: 'código da line que deseja os veículos.'
+        requires :code, desc: 'Line code to filter vehicles.'
       end
       get "line/:code", :rabl => "vehicles.rabl" do
         @vehicles = BusCache.instance.get_by_line(params[:code])
       end
-
+      
+      desc 'Create checkin to vehicle with code.'
       params do
-        requires :code, desc: 'código do veículo que será feito o checkin.'
+        requires :code, desc: 'Code vehicle to checkin.'
       end
-      post :checkin do
+      post ':code/checkin' do
         vehicle = BusCache.instance.get(params[:code])
         if(vehicle)
-          check_in = Checkin.new
-          check_in.user = current_user
-          check_in.vehicle = vehicle
-          return check_in.save!
+          Checkin.create(user: @current_user, vehicle: vehicle)
+        else
+          error!({ erro: 'Vehicle not found', detalhe: 'Vehicle is not online.' }, 404)
         end
-        error!({ erro: 'Vehicle não encontrado', detalhe: 'Não podemos fazer login em um vehicle que não se encontra rodando.' }, 404)
       end
-
     end
 
     params do
@@ -299,6 +297,7 @@ module StarBus
       requires :code
     end
     resource :interaction do
+      
       get ':type/stop/:code', :rabl => "interactions.rabl" do
         @type = Interaction.type_s[params[:type]]
         stop = Stop.find_by_code(params[:code])
@@ -306,6 +305,7 @@ module StarBus
         @reputation = stop.reputation
         @interactions = @reputation.interactions_type(@type)
       end
+      
       get ':type/vehicle/:code', :rabl => "interactions.rabl" do
         code = params[:code]
         @type = Interaction.type_s[params[:type]]
@@ -343,6 +343,7 @@ module StarBus
         requires :comment
         requires :id_facebook
       end
+      
       post ':type/vehicle/:code', :rabl => "result.rabl" do
         i = Interaction.new
         i.user = User.find_by_id_facebook(params[:id_facebook])

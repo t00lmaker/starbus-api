@@ -8,7 +8,6 @@ require_relative 'starbus-api'
 require_relative 'model/line'
 require_relative 'model/stop'
 
-
 load 'tasks/otr-activerecord.rake'
 
 namespace :db do
