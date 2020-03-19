@@ -18,4 +18,17 @@ describe :applications do
     expect_status(200)
     expect_json('application.id', 1)
   end
+
+  it "PUT /:id should update application with id application" do
+    put '/v2/applications/1', { name: "updated", description: "new desc", active: true }, token_head
+    expect_status(200)
+    expect_json('application.name', "updated")
+  end
+
+  it "DELETE /:id alter attribute active to false" do
+    delete '/v2/applications/1', {}, token_head
+    expect_status(200)
+    app = Application.find(1)
+    expect app.active == false
+  end
 end
