@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(version: 2020_02_20_015955) do
     t.string "password_hash"
     t.string "email"
     t.string "url_photo"
+    t.boolean "active", default: true
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
   end

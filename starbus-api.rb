@@ -103,7 +103,7 @@ module StarBus
       end
       
       params do
-        requires :id, desc: 'id da aplicacão para retorno dos dados.'
+        requires :id, desc: 'Id da aplicacão para retorno dos dados.'
         requires :name, desc: 'Nome da aplicação a ser criada.'
         requires :description, desc: 'Breve descrição da aplicação.'
         requires :active, desc: ''
@@ -126,13 +126,47 @@ module StarBus
     
     resource :users do
       params do
-        requires :email, desc: 'E-mail do usuario.'
-        requires :password, desc: 'E-mail do usuario.'
-        optional :name, desc: 'Nome do usuario.'
-        optional :url_photo, desc: 'E-mail do usuario.'
+        requires :email, desc: "Emial's new user."
+        requires :password, desc: "Password's new user."
+        optional :name, desc: "Name's new user."
+        optional :url_photo, desc: "Photo's new user."
       end
-      post do
-       
+      route_setting :public, true
+      post "/", :rabl => "user.rabl" do
+        hash_pass = BCrypt::Password.create(params[:password])
+        @user = User.create(name: params[:name], email: params[:email], password_hash: hash_pass, url_photo: params[:url_photo])
+      end
+
+      get '/', :rabl => "users.rabl" do
+        @users = User.all
+      end
+      
+      params do
+        requires :id, desc: 'id'
+      end
+      get ':id', :rabl => "user.rabl" do 
+        @user = User.find(params[:id]) rescue nil
+        error!({ erro: 'User not found', detalhe: 'Check id in param.'}, 404) unless @user
+      end
+      
+      params do
+        requires :email, desc: "Emial's user."
+        requires :password, desc: "Password's user."
+        optional :name, desc: "Name's user."
+        optional :url_photo, desc: "Photo's user."
+      end
+      put ':id', :rabl => "user.rabl" do
+        @user = User.find(params[:id]) rescue nil
+        error!({ erro: 'User not found', detalhe: 'Check id in param.'}, 404) unless @user
+        @user.update(params)
+      end
+
+      params do
+        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+      end
+      delete ':id', :rabl => "user.rabl" do 
+        @user = User.find(params[:id]) rescue nil
+        @user.update(active: false)
       end
       
       params do
