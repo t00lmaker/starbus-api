@@ -200,33 +200,25 @@ module StarBus
 
     resource :lines do
 
+      desc 'Return all  with filter in search to code, description, return'
       params do
-        requires :codes, type: Array, desc: 'códigos da lines que deseja'
+        optional :search, desc: 'Term to search'
+        optional :codes, type: Array, desc: 'códigos da lines que deseja'
       end
-      get '/', :rabl => "lines.rabl" do
-        @lines = Line.where(code: params[:codes]).order('code ASC')
-        if !@lines
-          error!({ erro: 'Line não encontrada.', detalhe: 'Verifique o code passado por parametro.' }, 404)
-        end
-        @lines
-      end
-
-      params do
-        optional :search, desc: 'termo para search da line.'
-      end
-      desc 'Retornas as lines registradas, filtradas ou não pelo parâmetro search.'
       get '/', :rabl => "lines.rabl" do
         search = params[:search]
         if(search)
-          sql = "code like ? OR denominacao like ? OR retorno like ?"
+          sql = "code like ? OR description like ? OR return like ? OR origin like ?"
           search = ActiveSupport::Inflector.transliterate(search)
           split = search.upcase.split
-          @lines = Set.new
-          split.each do |termo|
-              @lines = @lines + Line.where(sql, "%#{termo}%", "%#{termo}%","%#{termo}%").order("code asc")
-          end
+          @lines = split.map{|s| Line.where(sql, "%#{s}%", "%#{s}%","%#{s}%","%#{s}%").order("code asc")}.reduce(:+)
         else
-          @lines = Line.order(:code)
+          codes = params[:codes]
+          if(codes)
+            @lines = Line.where(code: params[:codes]).order('code asc')
+          else
+            @lines = Line.order(:code)
+          end
         end
       end
 
