@@ -33,4 +33,10 @@ describe :users do
     user = User.find(1)
     expect user.active == false
   end
+
+  it "POST /:id/sugestion should be create a new user's sugestion." do
+    post '/v2/users/1/sugestion', { email: "user@mail.com", text: "textao ..."}, token_head
+    expect_status(201)
+    expect Sugestion.where(user: User.find(1)) 
+  end
 end

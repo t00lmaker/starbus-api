@@ -59,7 +59,7 @@ module StarBus
       end
     end
     
-    desc "realiza o login retornando um token de acesso."
+    desc "Login application, return a jwt."
     route_setting :public, true
     params do
       requires :username, desc: 'username/email para login.'
@@ -82,31 +82,36 @@ module StarBus
     end
     
     resource :applications do
+
+      desc "Create new application."
       params do
-        requires :name, desc: 'Nome da aplicação a ser criada.'
-        requires :description, desc: 'Breve descrição da aplicação.'
+        requires :name, desc: "Name's new application."
+        requires :description, desc: 'Short description new application.'
       end
       post '/', :rabl => "application.rabl" do
         @application = Application.create(name: params[:name], description: params[:description], ownner: @current_user, users: [@current_user])
       end
       
+      desc "Return all application."
       get '/', :rabl => "applications.rabl" do
         @applications = Application.where(ownner: @current_user)
       end
       
+      desc "Return application by id."
       params do
-        requires :id, desc: 'id da aplicacão para retorno dos dados.'
+        requires :id, desc: "Id's application to find."
       end
       get ':id', :rabl => "application.rabl" do 
         @application = Application.find(params[:id]) rescue nil
         validate_app!(@application)
       end
       
+      desc "Update application."
       params do
-        requires :id, desc: 'Id da aplicacão para retorno dos dados.'
-        requires :name, desc: 'Nome da aplicação a ser criada.'
-        requires :description, desc: 'Breve descrição da aplicação.'
-        requires :active, desc: ''
+        requires :id, desc: "Id's application to find."
+        requires :name, desc: "Name's application"
+        requires :description, desc: "Short description new application."
+        requires :active, desc: "Check application is active or not"
       end
       put ':id', :rabl => "application.rabl" do
         @application = Application.find(params[:id]) rescue nil
@@ -114,8 +119,9 @@ module StarBus
         @application.update(name: params[:name], description: params[:description], active: params[:active])
       end
 
+      desc "Disable application by id"
       params do
-        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+        requires :id, desc: "Application's id to disabled."
       end
       delete ':id', :rabl => "application.rabl" do 
         @application = Application.find(params[:id]) rescue nil
@@ -125,6 +131,8 @@ module StarBus
     end
     
     resource :users do
+
+      desc "Create new user."
       params do
         requires :email, desc: "Emial's new user."
         requires :password, desc: "Password's new user."
@@ -137,10 +145,12 @@ module StarBus
         @user = User.create(name: params[:name], email: params[:email], password_hash: hash_pass, url_photo: params[:url_photo])
       end
 
+      desc "Return all users."
       get '/', :rabl => "users.rabl" do
         @users = User.all
       end
       
+      desc "Return user by id."
       params do
         requires :id, desc: 'id'
       end
@@ -149,6 +159,7 @@ module StarBus
         error!({ erro: 'User not found', detalhe: 'Check id in param.'}, 404) unless @user
       end
       
+      desc "Update User by id."
       params do
         requires :email, desc: "Emial's user."
         requires :password, desc: "Password's user."
@@ -161,27 +172,29 @@ module StarBus
         @user.update(params)
       end
 
+      desc "Disable user by id"
       params do
-        requires :id, desc: 'id da aplicacão que deseja atualizar.'
+        requires :id, desc: "User's id to disabled."
       end
       delete ':id', :rabl => "user.rabl" do 
         @user = User.find(params[:id]) rescue nil
         @user.update(active: false)
       end
       
+      desc "Create a user's sugestion to api"
       params do
-        optional :user, desc: 'Código identificador do facebook do usuário.'
-        optional :email, desc: 'E-mail do usuario.'
-        requires :text, desc: 'Texto da susgestão'
+        optional :id, desc: "User's id"
+        optional :email, desc: "User's email"
+        requires :text, desc: "Text of sugestion"
       end
-      post :sugestion do
-        if(params[:user])
-          @user = User.find_by_id_facebook(params[:hash]) if params[:user]
+      post ":id/sugestion" do
+        if(params[:id])
+          @user = User.find(params[:id])
         elsif(params[:email])
           @user = User.find_by_email(params[:email])
           @user = User.create(email: params[:email]) unless @user
         end
-        Sugestion.create(user: @user, text: params[:text]) != nil
+        Sugestion.create(user: @user, text: params[:text])
       end
     end
 
