@@ -8,3 +8,7 @@ def token_head(user=nil, app=nil)
   }
   { "Authorization" =>  "Bearer #{JWT.encode(payload, nil, 'none')}"} 
 end
+
+def truncate(model)
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{model.table_name} RESTART IDENTITY;")
+end
