@@ -10,5 +10,9 @@ def token_head(user=nil, app=nil)
 end
 
 def truncate(model)
-  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{model.table_name} RESTART IDENTITY;")
+  truncate_table(model.table_name)
+end
+
+def truncate_table(table)
+  ActiveRecord::Base.connection.execute("TRUNCATE TABLE #{table} RESTART IDENTITY CASCADE;")
 end

@@ -1,10 +1,13 @@
 describe :lines do 
  
   before(:all) do
-    truncate(Line)
     Line.create(code: "505", description: "REDONDA", return: "PRACA BANDEIRA", origin: "REDONDA")
     Line.create(code: "327", description: "RODOVIARIA", return: "UNIVERSIDADE", origin: "RODOVIARIA")
     Line.create(code: "503", description: "ALTO DA RESSU", return: "mocambinho", origin: "ALTO")
+  end
+
+  after(:all) do
+    truncate(Line)
   end
 
   context "GET /lines" do

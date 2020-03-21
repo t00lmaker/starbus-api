@@ -231,23 +231,21 @@ module StarBus
 
     resource :stops do
 
-      desc 'Return all lines.'
-      get '/', :rabl => "stops_basic.rabl" do
-        @stops = Stop.includes(:lines)
-      end
-
-      desc 'Return line by code.'
+      desc 'Return all stops filter by codes'
       params do
-        requires :code, desc: 'Stop code to return.'
+        optional :codes, type: Array, desc: 'Stop codes to return.'
       end
-      get ':code', :rabl => "stops.rabl"  do
-          @stops = Stop.find_by_code(params[:code]) ||
-          error!({ erro: 'Stop not found', detalhe: 'Stop by code not found' }, 404)
+      get '/', :rabl => "stops.rabl" do
+        if(params[:codes])
+          @stops = Stop.where(code: params[:codes]).order('code asc')
+        else
+          @stops = Stop.includes(:lines).order('code asc')
+        end
       end
 
       desc 'Return lines by stop.'
       params do
-        requires :code, desc: 'Stop code to return lines.'
+        requires :code, type: String, desc: 'Stop code to return lines.'
       end
       get ':code/lines', :rabl => "lines.rabl" do
         stop = Stop.find_by_code(params[:code])
@@ -264,10 +262,11 @@ module StarBus
         requires :long, type: Float
         requires :dist, type: Float
       end
-      get 'closes', :rabl => "stops.rabl" do
-        @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], params[:dist])
+      get 'closest', :rabl => "stops.rabl" do
+        strans = StransAPi.instance
+        @stops = strans.stops_proximas(params[:long], params[:lat], params[:dist])
         if(!@stops || @stops.empty?)
-          @stops = StransAPi.instance.stops_proximas(params[:long], params[:lat], (params[:dist] * 2))
+          @stops = strans.stops_proximas(params[:long], params[:lat], (params[:dist] * 2))
         end
       end
 
@@ -275,7 +274,7 @@ module StarBus
       params do
         requires :code, desc: 'Stop code to checkin.'
       end
-      post ':code/checkin' do
+      post '/:code/checkin' do
         stop = Stop.find_by_code(params[:code])
         if(stop)
           Checkin.create(user: @current_user, stop: stop)
@@ -283,7 +282,6 @@ module StarBus
           error!({ erro: 'Stop not found', detalhe: 'Stop by code not found' }, 404)
         end
       end
-
     end
 
     resource :vehicles do
