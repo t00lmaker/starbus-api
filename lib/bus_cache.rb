@@ -27,6 +27,7 @@ class BusCache
 
   def get(code)
     update
+    return nil unless @buses_by_code[code]
     valid?(@buses_by_code[code].time) ? @buses_by_code[code] : nil
   end
 
