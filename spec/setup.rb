@@ -3,6 +3,7 @@ require 'otr-activerecord'
 require 'rspec'
 require 'rack/test'
 require 'airborne'
+require 'webmock/rspec'
 
 # env default para rspec = test
 ENV['RAILS_ENV'] ||= 'test'

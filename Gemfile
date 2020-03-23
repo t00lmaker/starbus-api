@@ -1,4 +1,3 @@
-
 source "https://rubygems.org"
 
 # A simple DSL to easily develop RESTful APIs.
@@ -16,45 +15,34 @@ gem 'envyable'
 #cliente da api da strans.
 gem 'strans-client'
 
-#Ajuda a gerenciar conexoes com banco.
-#https://github.com/jhollinger/grape-activerecord
-#gem "grape-activerecord"
+# database lib
 gem "otr-activerecord"
 
-#https://github.com/ruby-grape/grape-rabl
+# json templates
 gem 'grape-rabl'
 
-#Gem que ajuda a trabalhar com tempo
-#https://github.com/kylewlacy/timerizer
+# time lib
 gem 'timerizer'
 
 # Gem para cryptografia
 gem 'bcrypt'
 
+# basic lib
 gem 'rake'
 
-# Gem para autenticação com jwt.
-# https://github.com/jwt/ruby-jwt
+# Auth with jwt
 gem 'jwt'
 
 group :development do
-  # Debug code Ruby require 'prbyebugy' and add 'byebug' in code
-  # for define breakpoint.
-  gem 'byebug'
   gem 'ruby-debug-ide'
   gem 'debase'
 end
 
 group :test do
+  # basic lib
   gem 'rspec'
-
   # Mock Requests. https://github.com/bblimke/webmock
-  #gem 'webmock'
-
-  # Record your test suite's HTTP interactions. https://github.com/vcr/vcr
-  #gem 'vcr'
-
+  gem 'webmock'
   #teste para web apis https://github.com/brooklynDev/airborne
   gem 'airborne'
-
 end
