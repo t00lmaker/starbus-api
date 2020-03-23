@@ -71,7 +71,8 @@ module StarBus
       if @user && @user.password == params[:password]
         payload = { 
           user_id: @user.id,
-          app_id:  @app.id
+          app_id:  @app.id,
+          exp: Time.now.to_i + 15 * 3600
         }
         jwt = JWT.encode(payload, nil, 'none')
         Token.create(jwt: jwt, application: @app)
@@ -227,6 +228,13 @@ module StarBus
         LoadLinesStops.new.init
       end
 
+      desc 'Return vehicles by line.'
+      params do
+        requires :code, desc: 'Line code to filter vehicles.'
+      end
+      get ":code/vehicles", :rabl => "vehicles.rabl" do
+        @vehicles = BusCache.instance.get_by_line(params[:code])
+      end
     end #resource :line
 
     resource :stops do
@@ -301,20 +309,7 @@ module StarBus
           error!({ erro: 'Vehicle não encontrado', detalhe: 'Apenas vehicles rodando encontram-se disponiveis aqui.' }, 404)
         end
       end
-
-      desc 'Return number vehicles online.'
-      get "count" do
-        { count: BusCache.instance.all.size }
-      end
-
-      desc 'Return vehicles by line.'
-      params do
-        requires :code, desc: 'Line code to filter vehicles.'
-      end
-      get "line/:code", :rabl => "vehicles.rabl" do
-        @vehicles = BusCache.instance.get_by_line(params[:code])
-      end
-      
+ 
       desc 'Create checkin to vehicle with code.'
       params do
         requires :code, desc: 'Code vehicle to checkin.'
