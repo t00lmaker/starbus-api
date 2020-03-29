@@ -15,12 +15,8 @@ require './model/result'
 require './model/application'
 require './model/users_application'
 require './lib/load_lines_stops'
-require './lib/load_vehicles'
 require './lib/client_strans'
 require './lib/bus_cache'
-require './lib/face_control'
-
-
 
 I18n.config.available_locales = :en
 

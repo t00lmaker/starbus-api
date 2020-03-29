@@ -4,6 +4,9 @@ require 'rspec'
 require 'rack/test'
 require 'airborne'
 require 'webmock/rspec'
+require 'coveralls'
+
+Coveralls.wear!
 
 # env default para rspec = test
 ENV['RAILS_ENV'] ||= 'test'

@@ -36,6 +36,7 @@ gem 'jwt'
 group :development do
   gem 'ruby-debug-ide'
   gem 'debase'
+  gem 'coveralls', require: false
 end
 
 group :test do
