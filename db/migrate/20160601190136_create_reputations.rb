@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateReputations < ActiveRecord::Migration[6.0]
   def self.up
     create_table :reputations do |t|
@@ -6,6 +8,7 @@ class CreateReputations < ActiveRecord::Migration[6.0]
       t.timestamps null: false
     end
   end
+
   def self.down
     drop_table :reputations
   end

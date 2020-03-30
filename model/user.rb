@@ -1,8 +1,10 @@
-require 'bcrypt'
+# frozen_string_literal: true
+
+require "bcrypt"
 
 class User < ActiveRecord::Base
   has_and_belongs_to_many :applications
-  has_many :your_apps, class_name: 'Application', foreign_key: 'ownner_id'
+  has_many :your_apps, class_name: "Application", foreign_key: "ownner_id"
 
   include BCrypt
 
@@ -15,4 +17,3 @@ class User < ActiveRecord::Base
     self.password_hash = @password
   end
 end
-

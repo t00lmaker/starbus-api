@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateInteractions < ActiveRecord::Migration[6.0]
   def self.up
     create_table :interactions do |t|
@@ -9,6 +11,7 @@ class CreateInteractions < ActiveRecord::Migration[6.0]
       t.timestamps null: false
     end
   end
+
   def self.down
     drop_table :interactions
   end

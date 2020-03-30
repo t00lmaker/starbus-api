@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "active_record"
 
 class Reputation < ActiveRecord::Base
@@ -19,11 +21,10 @@ class Reputation < ActiveRecord::Base
     total = 0
     avg = 0
     ints = interactions_type(type)
-    if(ints && !ints.empty?)
-      ints.each{|i| total += i.evaluation_value.to_i }
+    if ints && !ints.empty?
+      ints.each { |i| total += i.evaluation_value.to_i }
       avg = (total / ints.size)
     end
     avg
   end
-
 end

@@ -26,3 +26,22 @@ Esse repositorio guarda a api e a landpage do projeto.
  * Uma API implementada com o framwork [Grape](http://www.ruby-grape.org)
  * Teste de uma api utilizando Rspec e [Airborne](https://github.com/brooklynDev/airborne)
  * Uma API e uma aplicação rodando no mesmo servidor, utilizando dois frameworks diferentes Grape e Sinatra.
+
+
+ ### Comandos ulteis
+
+
+
+Avalia o codigo e corrige o que pode ser corrigido.
+bundle exec rubocop -a -x
+
+Corrige o formatação codigo.
+bundle exec rufo .
+
+Setup banco em test
+rake db:setup RAILS_ENV=test
+
+Seeds banco de dados em test.
+rake db:seed RAILS_ENV=test
+
+

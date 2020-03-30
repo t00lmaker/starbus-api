@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateTokens < ActiveRecord::Migration[6.0]
   def self.up
     create_table :tokens do |t|
@@ -7,6 +9,7 @@ class CreateTokens < ActiveRecord::Migration[6.0]
       t.timestamps null: false
     end
   end
+
   def self.down
     drop_table :tokens
   end

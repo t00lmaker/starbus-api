@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateUsers < ActiveRecord::Migration[6.0]
   def self.up
     create_table :users do |t|
@@ -10,6 +12,7 @@ class CreateUsers < ActiveRecord::Migration[6.0]
       t.timestamps null: false
     end
   end
+
   def self.down
     drop_table :users
   end

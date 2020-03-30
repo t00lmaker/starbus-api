@@ -1,10 +1,11 @@
-require 'singleton'
-require 'lazy-strans-client'
-require 'timerizer'
-require_relative '../model/vehicle'
-require_relative '../model/snapshot'
-require_relative '../model/line'
+# frozen_string_literal: true
 
+require "singleton"
+require "lazy-strans-client"
+require "timerizer"
+require_relative "../model/vehicle"
+require_relative "../model/snapshot"
+require_relative "../model/line"
 
 # Essa classe deve atualizar um cache
 # da posicao de todos os onibus, retornando
@@ -13,11 +14,11 @@ class BusCache
   include Singleton
 
   LIMIT_TIME_UPDATE = 20.seconds
-  LIMIT_TIME_VEI  = 5.minute
+  LIMIT_TIME_VEI = 5.minute
   LIMIT_TIME_SAVE = 5.minute
 
   def initialize
-    @client = StransClient.new(ENV['email'],ENV['senha'],ENV['key'])
+    @client = StransClient.new(ENV["email"], ENV["senha"], ENV["key"])
   end
 
   def all
@@ -28,6 +29,7 @@ class BusCache
   def get(code)
     update
     return nil unless @buses_by_code[code]
+
     valid?(@buses_by_code[code].time) ? @buses_by_code[code] : nil
   end
 
@@ -51,19 +53,19 @@ class BusCache
 
   # valida por meio do horario vehicles strans e starbus.
   def valid?(time)
-    time_as_array = time.split(':')
+    time_as_array = time.split(":")
     hash_h = { hour: time_as_array[0].to_i, min: time_as_array[1].to_i }
     time_veic = now.change(hash_h)
-    return time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
+    time_veic >= LIMIT_TIME_VEI.ago && time_veic <= LIMIT_TIME_VEI.from_now
   end
 
   def valids(buses)
-    buses.select { |v| valid?(v.time) } if buses
+    buses&.select { |v| valid?(v.time) }
   end
 
   def update
     unless updated?
-      reset if(!@last_update || @last_update.day != now.day)
+      reset if !@last_update || @last_update.day != now.day
       @last_update = now
       vehicles = StransAPi.instance.get(:veiculos)
       load_in_map(vehicles)
@@ -76,6 +78,7 @@ class BusCache
     if vehicles_strans && !vehicles_strans.is_a?(ErroStrans)
       vehicles_strans.each do |vehicle_strans|
         next unless valid?(vehicle_strans.hora)
+
         vehicle = load_or_save(vehicle_strans)
         vehicles_update << vehicle
         @buses_by_code[vehicle.code] = vehicle
@@ -89,9 +92,7 @@ class BusCache
   def load_or_save(vehicle_strans)
     code = vehicle_strans.codigoVeiculo
     vehicle = Vehicle.find_by_code(code)
-    unless vehicle 
-      vehicle = Vehicle.create(code: code, reputation: Reputation.new)
-    end
+    vehicle ||= Vehicle.create(code: code, reputation: Reputation.new)
     vehicle.merge(vehicle_strans)
     load_last_position(vehicle)
     vehicle
@@ -117,12 +118,12 @@ class BusCache
   end
 
   def save_snapshot
-    unless(@last_save && @last_save > LIMIT_TIME_SAVE.ago)
+    unless @last_save && @last_save > LIMIT_TIME_SAVE.ago
       lines_buses = {}
-      @buses_by_line.each do |k,v|
+      @buses_by_line.each do |k, v|
         lines_buses[k] = v.values
       end
-      Snapshot.create({value: lines_buses.to_json, data: Time.now - 3.hours})
+      Snapshot.create({ value: lines_buses.to_json, data: Time.now - 3.hours })
       @last_save = now
     end
   end

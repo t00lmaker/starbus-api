@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 class CreateStops < ActiveRecord::Migration[6.0]
   def self.up
@@ -10,6 +11,7 @@ class CreateStops < ActiveRecord::Migration[6.0]
       t.timestamps null: false
     end
   end
+
   def self.down
     drop_table :stops
   end

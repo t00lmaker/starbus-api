@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateLines < ActiveRecord::Migration[6.0]
   def self.up
     create_table :lines do |t|

@@ -1,5 +1,6 @@
-describe :vehicles do
+# frozen_string_literal: true
 
+describe :vehicles do
   before(:all) do
     strans_login_stub
     strans_vehicles_stub
@@ -32,8 +33,8 @@ describe :vehicles do
     it "should be reutrn all vehicles on-line in 5 min" do
       get "/v2/vehicles/", token_head
       expect_status(200)
-      expect_json("vehicles.0", code: -> (code){ expect(code).not_to eq("666")})
-      expect_json("vehicles.1", code: -> (code){ expect(code).not_to eq("666")})
+      expect_json("vehicles.0", code: ->(code) { expect(code).not_to eq("666") })
+      expect_json("vehicles.1", code: ->(code) { expect(code).not_to eq("666") })
     end
   end
 
@@ -49,7 +50,7 @@ describe :vehicles do
       expect_status(404)
     end
   end
-  
+
   context "POST :code/checkin" do
     it "should be new checkin associate to vehicle online" do
       post "/v2/vehicles/101/checkin", {}, token_head
@@ -60,8 +61,8 @@ describe :vehicles do
     end
 
     it "should be return 404 when code vehicle not online" do
-      post "/v2/vehicles/1/checkin", {},  token_head
+      post "/v2/vehicles/1/checkin", {}, token_head
       expect_status(404)
     end
   end
-end 
+end

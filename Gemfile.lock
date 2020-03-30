@@ -20,6 +20,7 @@ GEM
       rack-test (>= 1.1.0, < 2.0)
       rest-client (>= 2.0.2, < 3.0)
       rspec (~> 3.8)
+    ast (2.4.0)
     bcrypt (3.1.13)
     builder (3.2.4)
     concurrent-ruby (1.1.6)
@@ -83,6 +84,7 @@ GEM
       domain_name (~> 0.5)
     i18n (1.8.2)
       concurrent-ruby (~> 1.0)
+    jaro_winkler (1.5.4)
     json (2.3.0)
     jwt (2.2.1)
     mime-types (3.3.1)
@@ -97,6 +99,9 @@ GEM
     otr-activerecord (1.4.1)
       activerecord (>= 4.0, < 6.1)
       hashie-forbidden_attributes (~> 0.1)
+    parallel (1.19.1)
+    parser (2.7.0.5)
+      ast (~> 2.4.0)
     pg (1.2.3)
     public_suffix (4.0.3)
     rabl (0.14.2)
@@ -106,12 +111,14 @@ GEM
       rack (>= 0.4)
     rack-test (1.1.0)
       rack (>= 1.0, < 3)
+    rainbow (3.0.0)
     rake (13.0.1)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
       mime-types (>= 1.16, < 4.0)
       netrc (~> 0.8)
+    rexml (3.2.4)
     rspec (3.9.0)
       rspec-core (~> 3.9.0)
       rspec-expectations (~> 3.9.0)
@@ -125,9 +132,19 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.9.0)
     rspec-support (3.9.2)
+    rubocop (0.80.1)
+      jaro_winkler (~> 1.5.1)
+      parallel (~> 1.10)
+      parser (>= 2.7.0.1)
+      rainbow (>= 2.2.2, < 4.0)
+      rexml
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 1.4.0, < 1.7)
     ruby-debug-ide (0.7.0)
       rake (>= 0.8.1)
+    ruby-progressbar (1.10.1)
     ruby2_keywords (0.0.2)
+    rufo (0.12.0)
     safe_yaml (1.0.5)
     simplecov (0.16.1)
       docile (~> 1.1)
@@ -149,6 +166,7 @@ GEM
     unf (0.1.4)
       unf_ext
     unf_ext (0.0.7.6)
+    unicode-display_width (1.6.1)
     webmock (3.8.3)
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
@@ -171,7 +189,9 @@ DEPENDENCIES
   pg
   rake
   rspec
+  rubocop
   ruby-debug-ide
+  rufo
   strans-client
   timerizer
   webmock

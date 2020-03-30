@@ -1,25 +1,27 @@
-require 'yaml'
-require 'grape'
-require 'envyable'
-require 'otr-activerecord'
-require 'bundler/setup'
+# frozen_string_literal: true
 
-require_relative 'starbus-api'
-require_relative 'model/line'
-require_relative 'model/stop'
+require "yaml"
+require "grape"
+require "envyable"
+require "otr-activerecord"
+require "bundler/setup"
 
-require 'rspec/core/rake_task'
-task :default => :spec
+require_relative "starbus-api"
+require_relative "model/line"
+require_relative "model/stop"
+
+require "rspec/core/rake_task"
+task default: :spec
 RSpec::Core::RakeTask.new
 
-load 'tasks/otr-activerecord.rake'
+load "tasks/otr-activerecord.rake"
 
 namespace :db do
   task :environment do
-    if ENV['DATABASE_URL']
-      OTR::ActiveRecord.configure_from_url! ENV['DATABASE_URL']
+    if ENV["DATABASE_URL"]
+      OTR::ActiveRecord.configure_from_url! ENV["DATABASE_URL"]
     else
-      OTR::ActiveRecord.configure_from_file! 'config/database.yml'
+      OTR::ActiveRecord.configure_from_file! "config/database.yml"
     end
   end
 end
